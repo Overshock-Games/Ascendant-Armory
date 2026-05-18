@@ -66,6 +66,24 @@ public abstract class PlayerAttackMixin {
             if (executeBonus > 0.0 && livingTarget.getHealth() / livingTarget.getMaxHealth() <= 0.35f) {
                 amount *= (float) (1.0 + executeBonus);
             }
+
+            double frostbite = GearHelper.getScaledStatAmount(weapon, "frostbite")
+                + GearHelper.getScaledEquippedArtifactStatAmount(player, "frostbite");
+            if (frostbite > 0.0 && Math.random() < frostbite) {
+                livingTarget.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.SLOWNESS, 60, 1));
+            }
+
+            double venom = GearHelper.getScaledStatAmount(weapon, "venom")
+                + GearHelper.getScaledEquippedArtifactStatAmount(player, "venom");
+            if (venom > 0.0 && Math.random() < venom) {
+                livingTarget.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.POISON, 100, 1));
+            }
+
+            double shock = GearHelper.getScaledStatAmount(weapon, "shock")
+                + GearHelper.getScaledEquippedArtifactStatAmount(player, "shock");
+            if (shock > 0.0 && Math.random() < shock) {
+                livingTarget.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.WEAKNESS, 60, 0));
+            }
         }
 
         double ambushBonus = GearHelper.getScaledStatAmount(weapon, "ambush_damage");

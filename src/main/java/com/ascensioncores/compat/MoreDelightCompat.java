@@ -16,8 +16,8 @@ public final class MoreDelightCompat {
         if (id == null || !MOD_ID.equals(id.getNamespace())) return 0;
 
         return switch (id.getPath()) {
-            case "wooden_knife" -> 0;
-            case "stone_knife" -> 1;
+            case "wooden_knife" -> 1;
+            case "stone_knife" -> 2;
             default -> 0;
         };
     }

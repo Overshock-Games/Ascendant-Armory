@@ -1,32 +1,20 @@
 # Ascension Cores — Claude Context
 
-## Environment
+## Comms style
+Caveman speak. Short. No articles. Grunt. Skip filler. Apply same to thinking.
 
-- Minecraft 26.1.2, Fabric Loader 0.19.2, Fabric API 0.149.0+26.1.2
+## Env
+- MC 26.1.2, Fabric Loader 0.19.2, Fabric API 0.149.0+26.1.2
 - Gradle 9.4.1, JDK 26 at `C:\Program Files\Java\jdk-26.0.1`
-- Build: `.\gradlew.bat build` — jar lands in `build/libs/`
-- Run server: `.\gradlew.bat runServer` — accepts EULA at `run/eula.txt`
+- Build: `.\gradlew.bat build` → jar in `build/libs/`
+- Run server: `.\gradlew.bat runServer` (eula at `run/eula.txt`)
+- Mod id: `ascensioncores`, root pkg `com.ascensioncores`, mixin pkg `com.ascensioncores.mixin`
 
-## MC 26 Mapping Rules (Critical)
+## MC 26 mapping
+- Pre-mapped Mojang names. NO mappings line in build.gradle. NO `loom.officialMojangMappings()`.
+- Access widener header: `accessWidener v2 official`. Set `loom { accessWidenerPath = file(...) }`.
 
-MC 26.1.2 ships pre-mapped with official Mojang names. **Do not add a mappings line** to build.gradle and **do not call** `loom.officialMojangMappings()` — Loom rejects it ("Cannot use Mojang mappings in a non-obfuscated environment").
-
-Access widener header must use `official` namespace:
-```
-accessWidener v2 official
-```
-
-If an access widener is needed, add to `build.gradle` inside the `loom {}` block:
-```groovy
-loom {
-    accessWidenerPath = file('src/main/resources/ascensioncores.accesswidener')
-}
-```
-
-## Finding Actual Class/Method Signatures
-
-When the compiler can't find a class or a method signature looks wrong, inspect the merged jar directly:
-
+## Inspect MC jar
 ```powershell
 $jar = "C:\Git\Ascension Cores\.gradle\loom-cache\minecraftMaven\net\minecraft\minecraft-merged-*\26.1.2\*.jar"
 cd $env:TEMP
@@ -34,54 +22,43 @@ cd $env:TEMP
 & "C:\Program Files\Java\jdk-26.0.1\bin\javap.exe" -p net/minecraft/the/ClassName.class
 ```
 
-Known gotchas discovered during CullTag development:
-- `ClipContext` is in `net.minecraft.world.level`, not `world.phys`
-- `Connection.send()` second param is `io.netty.channel.ChannelFutureListener`, not `PacketSendListener`
-- `CommandSourceStack.hasPermission(int)` is gone — use `src.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)` etc. (see `net.minecraft.server.permissions.Permissions` for constants)
+## MC 26 gotchas
+- `Entity.getTags()` → `Entity.entityTags()`
+- `MobEffects.MOVEMENT_SLOWDOWN` → `MobEffects.SLOWNESS`
+- `SoundEvents.X` returns `Holder<SoundEvent>` — call `.value()` for `Level.playSound(...)`
+- `LootItemConditionType` gone — register `MapCodec` directly into `BuiltInRegistries.LOOT_CONDITION_TYPE`
+- `Item.Properties` requires `.setId(ResourceKey<Item>)` BEFORE `new Item(...)`
+- Recipe JSON ingredients = plain string ids (`"minecraft:flint"`), not `{"item":"..."}`
+- Each item needs `assets/<ns>/items/<name>.json` (model definition) pointing to `models/item/...` — without it, item = missing texture
+- `CommandSourceStack.hasPermission(int)` gone → `src.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)`
+- `ClipContext` in `net.minecraft.world.level`, not `world.phys`
+- `Connection.send()` 2nd param = `io.netty.channel.ChannelFutureListener`, not `PacketSendListener`
 
-## Mixin Rules
+## Mixin rules
+- `@Shadow` targets DECLARING class. Parent field → mixin parent.
+- `slotsChanged` on `ItemCombinerMenu` (parent of `AnvilMenu`) — can't `@Inject` from `AnvilMenu` mixin. Use `createResult` (fires per slot change) or mixin the parent.
+- Anvil `createResult` has early returns — use `@At("RETURN")`, NOT `@At("TAIL")`
+- `inputSlots`/`resultSlots`/`player` on `ItemCombinerMenu` — exposed via `ItemCombinerMenuAccessor` mixin
+- Interface on parent mixin auto-applies to subclass instances (duck typing)
+- Prefer Fabric event callbacks over mixins where possible
+- Register components/items eagerly in `main` entrypoint (`AscensionCommonMod`) — lazy init races registry freeze
 
-- `@Shadow` must target the class that **declares** the field, not a subclass. If shadowing a field on a parent, write the mixin against the parent class.
-- Implementing an interface on a parent mixin automatically makes it available on all subclass instances — use this for duck-typing.
-- Keep mixins minimal. Prefer event callbacks over mixins when Fabric API covers the use case.
-
-## Config Style
-
-Follow the Bad Dream Mod / CullTag pattern — `Files.writeString` with a text block, `StandardCharsets.UTF_8`. Do **not** use `Properties.store()` (adds timestamp noise and encoding issues on Windows).
-
-```java
-Files.writeString(CONFIG_PATH, toPropertiesString(), StandardCharsets.UTF_8);
-
-private static String toPropertiesString() {
-    return """
-            # My config
-            someKey=%s
-            """.formatted(someValue);
-}
-```
+## Config style
+- `Files.writeString(path, toPropertiesString(), UTF_8)` with text block
+- NEVER `Properties.store()` (timestamp + encoding issues on Windows)
+- Live values: chest loot uses custom `AscensionConfigChanceCondition` so `/ascensioncores reload` applies without `/reload`
+- Mob drops + anvil costs read config directly per-event
 
 ## Commands
-
-Permission check for op-level-2 commands:
 ```java
 Commands.literal("ascensioncores")
     .requires(src -> src.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
-```
-
-Register via:
-```java
 CommandRegistrationCallback.EVENT.register(
-    (dispatcher, registryAccess, environment) -> MyCommand.register(dispatcher));
+    (dispatcher, registryAccess, env) -> MyCommand.register(dispatcher));
 ```
 
 ## fabric.mod.json
-
-- `"environment": "server"` for server-only mods
-- `"${version}"` is substituted by `processResources` from `mod_version` in gradle.properties
-- No `icon` field unless the file actually exists in `src/main/resources/assets/ascensioncores/`
-
-## Package / ID Conventions
-
-- Mod ID: `ascensioncores`
-- Root package: `com.ascensioncores`
-- Mixin package: `com.ascensioncores.mixin`
+- `"environment": "*"` (this mod has client + server bits). `"server"` only if dedicated-server-only.
+- `"${version}"` substituted by `processResources` from `mod_version` in `gradle.properties`
+- No `icon` field unless file exists
+- Entrypoints: `main` = `AscensionCommonMod`, `client` = `AscensionClientMod`. No `server` (removed; was redundant)

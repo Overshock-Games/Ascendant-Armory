@@ -9,8 +9,9 @@
     "PlayerAttackMixin",
     "LivingEntityDamageMixin",
     "LootTableMixin",
-    "GrindstoneMenuMixin",
-    "ProjectileDamageMixin"
+    "GrindstoneMenuM
+    "ProjectileDamageMixin",
+    "LivingEntityEffectMixin"
   ],
   "client": [
     "AbstractContainerScreenAccessor"

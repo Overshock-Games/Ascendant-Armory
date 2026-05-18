@@ -16,11 +16,11 @@ public final class FarmersDelightCompat {
         if (id == null || !MOD_ID.equals(id.getNamespace())) return 0;
 
         return switch (id.getPath()) {
-            case "flint_knife", "golden_knife" -> 0;
-            case "copper_knife" -> 1;
-            case "iron_knife", "skillet" -> 2;
-            case "diamond_knife" -> 3;
-            case "netherite_knife" -> 4;
+            case "flint_knife", "golden_knife" -> 1;
+            case "copper_knife" -> 2;
+            case "iron_knife", "skillet" -> 3;
+            case "diamond_knife" -> 4;
+            case "netherite_knife" -> 5;
             default -> 0;
         };
     }

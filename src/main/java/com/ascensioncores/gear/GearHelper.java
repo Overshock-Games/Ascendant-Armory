@@ -1,6 +1,7 @@
 package com.ascensioncores.gear;
 
 import com.ascensioncores.AscensionCoresConfig;
+import com.ascensioncores.compat.ArtifactsCompat;
 import com.ascensioncores.compat.FarmersDelightCompat;
 import com.ascensioncores.compat.MoreDelightCompat;
 import com.ascensioncores.compat.ProgressionRebornCompat;
@@ -43,6 +44,12 @@ public final class GearHelper {
             || isNamedRangedWeapon(stack);
     }
 
+    public static boolean isRangedWeapon(ItemStack stack) {
+        Item item = stack.getItem();
+        return item == Items.BOW || item == Items.CROSSBOW || item == Items.TRIDENT
+            || isNamedRangedWeapon(stack);
+    }
+
     public static boolean isArmor(ItemStack stack) {
         Equippable eq = stack.get(DataComponents.EQUIPPABLE);
         if (eq == null) return false;
@@ -57,7 +64,7 @@ public final class GearHelper {
     }
 
     public static boolean isGear(ItemStack stack) {
-        return isWeapon(stack) || isArmor(stack) || isTool(stack);
+        return isWeapon(stack) || isArmor(stack) || isTool(stack) || ArtifactsCompat.isArtifact(stack.getItem());
     }
 
     // ── Component helpers ───────────────────────────────────────────────────
@@ -212,11 +219,13 @@ public final class GearHelper {
 
     public static int getMaterialCapacity(ItemStack stack) {
         Item item = stack.getItem();
-        if (isTier0(item)) return 0;
-        if (isTier1(item)) return 1;
-        if (isTier2(item)) return 2;
-        if (isTier3(item)) return 3;
-        if (isTier4(item)) return 4;
+        if (isTier0(item)) return 1;
+        if (isTier1(item)) return 2;
+        if (isTier2(item)) return 3;
+        if (isTier3(item)) return 4;
+        if (isTier4(item)) return 5;
+        int artifactsCapacity = ArtifactsCompat.getMaterialCapacity(item);
+        if (artifactsCapacity > 0) return artifactsCapacity;
         int farmersDelightCapacity = FarmersDelightCompat.getMaterialCapacity(item);
         if (farmersDelightCapacity > 0) return farmersDelightCapacity;
         int moreDelightCapacity = MoreDelightCompat.getMaterialCapacity(item);
@@ -281,11 +290,11 @@ public final class GearHelper {
         if (id == null) return -1;
 
         String[] tokens = id.getPath().toLowerCase(Locale.ROOT).split("[^a-z0-9]+");
-        if (hasToken(tokens, "netherite")) return 4;
-        if (hasToken(tokens, "diamond")) return 3;
-        if (hasToken(tokens, "iron", "steel", "rose")) return 2;
-        if (hasToken(tokens, "stone", "copper", "chainmail", "chain", "bronze")) return 1;
-        if (hasToken(tokens, "wood", "wooden", "gold", "golden", "leather", "flint")) return 0;
+        if (hasToken(tokens, "netherite")) return 5;
+        if (hasToken(tokens, "diamond")) return 4;
+        if (hasToken(tokens, "iron", "steel", "rose")) return 3;
+        if (hasToken(tokens, "stone", "copper", "chainmail", "chain", "bronze")) return 2;
+        if (hasToken(tokens, "wood", "wooden", "gold", "golden", "leather", "flint")) return 1;
         return -1;
     }
 
@@ -322,11 +331,11 @@ public final class GearHelper {
         if (!stack.isDamageableItem()) return 0;
 
         int maxDamage = stack.getMaxDamage();
-        if (maxDamage >= 1900) return 4;
-        if (maxDamage >= 1000) return 3;
-        if (maxDamage >= 240) return 2;
-        if (maxDamage >= 100) return 1;
-        return 0;
+        if (maxDamage >= 1900) return 5;
+        if (maxDamage >= 1000) return 4;
+        if (maxDamage >= 240) return 3;
+        if (maxDamage >= 100) return 2;
+        return 1;
     }
 
     private static int inferCapacityFromBaseAttributes(ItemStack stack) {
@@ -338,47 +347,50 @@ public final class GearHelper {
             if (slot == null) return 0;
 
             double toughness = modifiers.compute(Attributes.ARMOR_TOUGHNESS, 0.0, slot);
-            if (toughness >= 3.0) return 4;
-            if (toughness >= 2.0) return 3;
+            if (toughness >= 3.0) return 5;
+            if (toughness >= 2.0) return 4;
 
             double armor = modifiers.compute(Attributes.ARMOR, 0.0, slot);
             return switch (slot) {
                 case HEAD, FEET -> {
-                    if (armor >= 3.0) yield 3;
-                    if (armor >= 2.0) yield 2;
-                    if (armor >= 1.0) yield 1;
-                    yield 0;
+                    if (armor >= 3.0) yield 4;
+                    if (armor >= 2.0) yield 3;
+                    if (armor >= 1.0) yield 2;
+                    yield 1;
                 }
                 case CHEST -> {
-                    if (armor >= 8.0) yield 3;
-                    if (armor >= 6.0) yield 2;
-                    if (armor >= 5.0) yield 1;
-                    yield 0;
-                }
-                case LEGS -> {
+                    if (armor >= 8.0) yield 4;
                     if (armor >= 6.0) yield 3;
                     if (armor >= 5.0) yield 2;
-                    if (armor >= 4.0) yield 1;
-                    yield 0;
+                    yield 1;
                 }
-                default -> 0;
+                case LEGS -> {
+                    if (armor >= 6.0) yield 4;
+                    if (armor >= 5.0) yield 3;
+                    if (armor >= 4.0) yield 2;
+                    yield 1;
+                }
+                default -> 1;
             };
         }
 
         if (isWeapon(stack)) {
             double attackDamage = modifiers.compute(Attributes.ATTACK_DAMAGE, 0.0, EquipmentSlot.MAINHAND);
-            if (attackDamage >= 8.0) return 4;
-            if (attackDamage >= 6.0) return 3;
-            if (attackDamage >= 5.0) return 2;
-            if (attackDamage >= 4.0) return 1;
+            if (attackDamage >= 8.0) return 5;
+            if (attackDamage >= 6.0) return 4;
+            if (attackDamage >= 5.0) return 3;
+            if (attackDamage >= 4.0) return 2;
         }
 
-        return 0;
+        return 1;
     }
 
     // ── Internal helpers ────────────────────────────────────────────────────
 
     public static List<StatPool.StatDef> getPool(ItemStack stack) {
+        if (ArtifactsCompat.isHandArtifact(stack.getItem())) return StatPool.WEAPON_POOL;
+        if (ArtifactsCompat.isArtifact(stack.getItem())) return StatPool.ARMOR_POOL;
+        if (isRangedWeapon(stack)) return StatPool.RANGED_WEAPON_POOL;
         if (isWeapon(stack)) return StatPool.WEAPON_POOL;
         if (isArmor(stack))  return StatPool.ARMOR_POOL;
         return StatPool.TOOL_POOL;
@@ -404,6 +416,12 @@ public final class GearHelper {
             + getScaledStatAmount(entity.getItemBySlot(EquipmentSlot.CHEST), statId)
             + getScaledStatAmount(entity.getItemBySlot(EquipmentSlot.LEGS), statId)
             + getScaledStatAmount(entity.getItemBySlot(EquipmentSlot.FEET), statId);
+    }
+
+    public static double getScaledEquippedArtifactStatAmount(LivingEntity entity, String statId) {
+        final double[] total = {0.0};
+        ArtifactsCompat.forEachEquippedArtifact(entity, stack -> total[0] += getScaledStatAmount(stack, statId));
+        return total[0];
     }
 
     private static EquipmentSlotGroup getArmorSlotGroup(ItemStack stack) {

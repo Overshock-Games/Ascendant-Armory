@@ -11,7 +11,7 @@ import java.util.Set;
 public final class ProgressionRebornCompat {
 
     public static final String MOD_ID = "progression_reborn";
-    private static final int ROSE_CAPACITY = 2;
+    private static final int ROSE_CAPACITY = 3;
 
     private static final Set<String> ROSE_GEAR_IDS = Set.of(
         "rose_sword",

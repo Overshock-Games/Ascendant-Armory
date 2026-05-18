@@ -1,13 +1,9 @@
 package com.ascensioncores.gear;
 
-import com.ascensioncores.AscensionCoresConfig;
 import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.fabricmc.loader.api.FabricLoader;
 import net.puffish.attributesmod.api.PuffishAttributes;
 
 import java.text.DecimalFormat;
@@ -31,23 +27,24 @@ public final class StatPool {
         String displayName,
         String unit,   // "%" → multiply by 100 and append %; otherwise append as-is
         AttributeModifier.Operation operation,
-        int minLevel
+        int minLevel    // earliest item ascension level at which this stat may roll
     ) {
         public StatDef(String id, Holder<Attribute> attribute, double minAmount, double maxAmount, String displayName, String unit) {
             this(id, attribute, minAmount, maxAmount, displayName, unit, AttributeModifier.Operation.ADD_VALUE, 1);
         }
-
-        public StatDef(String id, Holder<Attribute> attribute, double minAmount, double maxAmount, String displayName, String unit, int minLevel) {
-            this(id, attribute, minAmount, maxAmount, displayName, unit, AttributeModifier.Operation.ADD_VALUE, minLevel);
-        }
-
         public StatDef(String id, Holder<Attribute> attribute, double minAmount, double maxAmount, String displayName, String unit, AttributeModifier.Operation operation) {
             this(id, attribute, minAmount, maxAmount, displayName, unit, operation, 1);
+        }
+        public StatDef(String id, Holder<Attribute> attribute, double minAmount, double maxAmount, String displayName, String unit, int minLevel) {
+            this(id, attribute, minAmount, maxAmount, displayName, unit, AttributeModifier.Operation.ADD_VALUE, minLevel);
         }
     }
 
     // ── Weapon pool (swords + axes) ─────────────────────────────────────────
     public static List<StatDef> WEAPON_POOL = createWeaponPool();
+
+    // ── Ranged weapon pool (bow, crossbow, trident) ────────────────────────
+    public static List<StatDef> RANGED_WEAPON_POOL = createRangedWeaponPool();
 
     // ── Armor pool ──────────────────────────────────────────────────────────
     public static List<StatDef> ARMOR_POOL = createArmorPool();
@@ -60,48 +57,73 @@ public final class StatPool {
 
     public static void refresh() {
         WEAPON_POOL = createWeaponPool();
+        RANGED_WEAPON_POOL = createRangedWeaponPool();
         ARMOR_POOL = createArmorPool();
         TOOL_POOL = createToolPool();
     }
 
     private static List<StatDef> createWeaponPool() {
         List<StatDef> pool = new ArrayList<>(List.of(
-            new StatDef("life_steal",           PuffishAttributes.LIFE_STEAL,           0.02, 0.06, "Life Steal",           "%", 2),
+            new StatDef("life_steal",           PuffishAttributes.LIFE_STEAL,           0.02, 0.06, "Life Steal",           "%"),
+            new StatDef("reach",                Attributes.ENTITY_INTERACTION_RANGE,    0.50, 1.50, "Reach",                " blk"),
             new StatDef("attack_speed",         Attributes.ATTACK_SPEED,                0.10, 0.30, "Attack Speed",         " pts"),
             new StatDef("armor_shred",          PuffishAttributes.ARMOR_SHRED,          0.50, 2.00, "Armor Shred",          " pts"),
-            new StatDef("toughness_shred",      PuffishAttributes.TOUGHNESS_SHRED,      0.30, 1.00, "Toughness Shred",      " pts", 2),
+            new StatDef("toughness_shred",      PuffishAttributes.TOUGHNESS_SHRED,      0.30, 1.00, "Toughness Shred",      " pts"),
             new StatDef("experience",           PuffishAttributes.EXPERIENCE,           0.05, 0.20, "XP Bonus",             "%"),
-            new StatDef("healing",              PuffishAttributes.HEALING,              0.05, 0.15, "Healing Amp.",         "%", 2),
-            new StatDef("critical_damage",      null,                                   0.10, 0.25, "Crit Damage",          "%", 3),
-            new StatDef("execute_damage",       null,                                   0.08, 0.18, "Execute Damage",       "%", 3),
-            new StatDef("ambush_damage",        null,                                   0.08, 0.18, "Ambush Damage",        "%", 3),
-            new StatDef("sprinting_speed",      PuffishAttributes.SPRINTING_SPEED,      0.03, 0.10, "Sprint Speed",         "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE, 2),
-            new StatDef("stealth",              PuffishAttributes.STEALTH,              0.50, 2.00, "Stealth",              " blk", 2),
-            new StatDef("jump",                 PuffishAttributes.JUMP,                 0.05, 0.20, "Jump Height",          "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE, 2),
+            new StatDef("critical_damage",      null,                                   0.10, 0.25, "Crit Damage",          "%"),
+            new StatDef("execute_damage",       null,                                   0.08, 0.18, "Execute Damage",       "%"),
+            new StatDef("ambush_damage",        null,                                   0.08, 0.18, "Ambush Damage",        "%"),
+            new StatDef("frostbite",            null,                                   0.05, 0.15, "Frostbite",            "%"),
+            new StatDef("venom",                null,                                   0.05, 0.15, "Venom",                "%"),
+            new StatDef("shock",                null,                                   0.05, 0.15, "Shock",                "%"),
+            new StatDef("sprinting_speed",      PuffishAttributes.SPRINTING_SPEED,      0.03, 0.10, "Sprint Speed",         "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
+            new StatDef("stealth",              PuffishAttributes.STEALTH,              0.50, 2.00, "Stealth",              " blk"),
+            new StatDef("jump",                 PuffishAttributes.JUMP,                 0.05, 0.20, "Jump Height",          "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
             new StatDef("repair_cost",          PuffishAttributes.REPAIR_COST,         -0.15,-0.05, "Repair Cost",          "%")
         ));
-        addOptionalAttribute(pool, "staminaattributes", "stamina_attack_cost", "attacking_action_stamina_cost", -0.20, -0.05, "Attack Stamina Cost", " pts", 2);
+        return List.copyOf(pool);
+    }
+
+    private static List<StatDef> createRangedWeaponPool() {
+        // Same as weapon pool but skips melee-only stats (reach, attack_speed).
+        // ProjectileDamageMixin handles crit/execute/ambush/frost/venom/shock for arrows.
+        List<StatDef> pool = new ArrayList<>(List.of(
+            new StatDef("life_steal",           PuffishAttributes.LIFE_STEAL,           0.02, 0.06, "Life Steal",           "%"),
+            new StatDef("armor_shred",          PuffishAttributes.ARMOR_SHRED,          0.50, 2.00, "Armor Shred",          " pts"),
+            new StatDef("toughness_shred",      PuffishAttributes.TOUGHNESS_SHRED,      0.30, 1.00, "Toughness Shred",      " pts"),
+            new StatDef("experience",           PuffishAttributes.EXPERIENCE,           0.05, 0.20, "XP Bonus",             "%"),
+            new StatDef("critical_damage",      null,                                   0.10, 0.25, "Crit Damage",          "%"),
+            new StatDef("execute_damage",       null,                                   0.08, 0.18, "Execute Damage",       "%"),
+            new StatDef("ambush_damage",        null,                                   0.08, 0.18, "Ambush Damage",        "%"),
+            new StatDef("frostbite",            null,                                   0.05, 0.15, "Frostbite",            "%"),
+            new StatDef("venom",                null,                                   0.05, 0.15, "Venom",                "%"),
+            new StatDef("shock",                null,                                   0.05, 0.15, "Shock",                "%"),
+            new StatDef("sprinting_speed",      PuffishAttributes.SPRINTING_SPEED,      0.03, 0.10, "Sprint Speed",         "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
+            new StatDef("stealth",              PuffishAttributes.STEALTH,              0.50, 2.00, "Stealth",              " blk"),
+            new StatDef("jump",                 PuffishAttributes.JUMP,                 0.05, 0.20, "Jump Height",          "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
+            new StatDef("repair_cost",          PuffishAttributes.REPAIR_COST,         -0.15,-0.05, "Repair Cost",          "%")
+        ));
         return List.copyOf(pool);
     }
 
     private static List<StatDef> createArmorPool() {
         List<StatDef> pool = new ArrayList<>(List.of(
+            new StatDef("evasion",              null,                                   0.02, 0.08, "Evasion",              "%"),
+            new StatDef("deflection",           null,                                   0.05, 0.15, "Deflection",           "%"),
+            new StatDef("tenacity",             null,                                   0.10, 0.30, "Tenacity",             "%"),
             new StatDef("melee_resistance",     PuffishAttributes.MELEE_RESISTANCE,     0.50, 2.00, "Melee Resist.",        " DMG"),
-            new StatDef("natural_regeneration", PuffishAttributes.NATURAL_REGENERATION, 0.05, 0.20, "Natural Regen",        "%", 2),
-            new StatDef("last_stand_guard",     null,                                   0.05, 0.12, "Last Stand Guard",     "%", 3),
-            new StatDef("steady_guard",         null,                                   0.04, 0.10, "Steady Guard",         "%", 3),
+            new StatDef("natural_regeneration", PuffishAttributes.NATURAL_REGENERATION, 0.05, 0.20, "Natural Regen",        "%"),
+            new StatDef("last_stand_guard",     null,                                   0.05, 0.12, "Last Stand Guard",     "%"),
+            new StatDef("steady_guard",         null,                                   0.04, 0.10, "Steady Guard",         "%"),
             new StatDef("sprinting_speed",      PuffishAttributes.SPRINTING_SPEED,      0.03, 0.10, "Sprint Speed",         "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
-            new StatDef("consuming_speed",      PuffishAttributes.CONSUMING_SPEED,      0.03, 0.10, "Consume Speed",        "%", 2),
+            new StatDef("consuming_speed",      PuffishAttributes.CONSUMING_SPEED,      0.03, 0.10, "Consume Speed",        "%"),
             new StatDef("repair_cost",          PuffishAttributes.REPAIR_COST,         -0.15,-0.05, "Repair Cost",          "%"),
-            new StatDef("stealth",              PuffishAttributes.STEALTH,              0.50, 2.00, "Stealth",              " blk", 2),
-            new StatDef("tamed_resistance",     PuffishAttributes.TAMED_RESISTANCE,     0.50, 2.00, "Tamed Resist.",        " DMG", 3),
-            new StatDef("healing",              PuffishAttributes.HEALING,              0.05, 0.15, "Healing Amp.",         "%", 2),
+            new StatDef("stealth",              PuffishAttributes.STEALTH,              0.50, 2.00, "Stealth",              " blk"),
+            new StatDef("tamed_resistance",     PuffishAttributes.TAMED_RESISTANCE,     0.50, 2.00, "Tamed Resist.",        " DMG"),
             new StatDef("stamina",              PuffishAttributes.STAMINA,              0.50, 2.00, "Stamina",              " pts"),
             new StatDef("experience",           PuffishAttributes.EXPERIENCE,           0.05, 0.20, "XP Bonus",             "%"),
-            new StatDef("jump",                 PuffishAttributes.JUMP,                 0.05, 0.20, "Jump Height",          "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE, 2)
+            new StatDef("jump",                 PuffishAttributes.JUMP,                 0.05, 0.20, "Jump Height",          "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE)
         ));
-        addOptionalAttribute(pool, "staminaattributes", "stamina_max", "max_stamina", 0.50, 2.00, "Max Stamina", " pts", 2);
-        addOptionalAttribute(pool, "staminaattributes", "stamina_regeneration", "stamina_regeneration", 0.05, 0.20, "Stamina Regen", " pts", 2);
         return List.copyOf(pool);
     }
 
@@ -110,57 +132,36 @@ public final class StatPool {
             new StatDef("experience",           PuffishAttributes.EXPERIENCE,           0.05, 0.20, "XP Bonus",             "%"),
             new StatDef("repair_cost",          PuffishAttributes.REPAIR_COST,         -0.15,-0.05, "Repair Cost",          "%"),
             new StatDef("consuming_speed",      PuffishAttributes.CONSUMING_SPEED,      0.03, 0.10, "Consume Speed",        "%"),
-            new StatDef("jump",                 PuffishAttributes.JUMP,                 0.05, 0.20, "Jump Height",          "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE, 2),
-            new StatDef("natural_regeneration", PuffishAttributes.NATURAL_REGENERATION, 0.05, 0.20, "Natural Regen",        "%", 3),
-            new StatDef("stamina",              PuffishAttributes.STAMINA,              0.50, 2.00, "Stamina",              " pts", 2),
-            new StatDef("healing",              PuffishAttributes.HEALING,              0.05, 0.15, "Healing Amp.",         "%", 2),
-            new StatDef("stealth",              PuffishAttributes.STEALTH,              0.50, 2.00, "Stealth",              " blk", 3),
-            new StatDef("sprinting_speed",      PuffishAttributes.SPRINTING_SPEED,      0.03, 0.10, "Sprint Speed",         "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE, 2)
+            new StatDef("jump",                 PuffishAttributes.JUMP,                 0.05, 0.20, "Jump Height",          "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
+            new StatDef("natural_regeneration", PuffishAttributes.NATURAL_REGENERATION, 0.05, 0.20, "Natural Regen",        "%"),
+            new StatDef("stamina",              PuffishAttributes.STAMINA,              0.50, 2.00, "Stamina",              " pts"),
+            new StatDef("stealth",              PuffishAttributes.STEALTH,              0.50, 2.00, "Stealth",              " blk"),
+            new StatDef("sprinting_speed",      PuffishAttributes.SPRINTING_SPEED,      0.03, 0.10, "Sprint Speed",         "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE)
         ));
-        addOptionalAttribute(pool, "staminaattributes", "stamina_break_cost", "block_breaking_action_stamina_cost", -0.20, -0.05, "Mining Stamina Cost", " pts", 2);
-        addOptionalAttribute(pool, "staminaattributes", "stamina_max", "max_stamina", 0.50, 2.00, "Max Stamina", " pts", 2);
         return List.copyOf(pool);
-    }
-
-    private static void addOptionalAttribute(
-            List<StatDef> pool,
-            String modId,
-            String id,
-            String attributePath,
-            double minAmount,
-            double maxAmount,
-            String displayName,
-            String unit,
-            int minLevel) {
-        if (!FabricLoader.getInstance().isModLoaded(modId)) return;
-        if ("staminaattributes".equals(modId) && !AscensionCoresConfig.enableStaminaAttributes) return;
-        if (pool.stream().anyMatch(def -> def.id().equals(id))) return;
-
-        Identifier attributeId = Identifier.fromNamespaceAndPath(modId, attributePath);
-        BuiltInRegistries.ATTRIBUTE.get(attributeId).ifPresent(attribute ->
-            pool.add(new StatDef(id, attribute, minAmount, maxAmount, displayName, unit, minLevel)));
     }
 
     // ── Rolling ─────────────────────────────────────────────────────────────
 
     /** Rolls a random stat from {@code pool} not already present in {@code existing}. Returns null if pool exhausted. */
     public static RolledStat rollStat(List<RolledStat> existing, List<StatDef> pool) {
-        return rollStat(existing, pool, AscensionCoresConfig.maxLevel, RANDOM);
+        return rollStat(existing, pool, Integer.MAX_VALUE, RANDOM);
     }
 
     public static RolledStat rollStat(List<RolledStat> existing, List<StatDef> pool, Random random) {
-        return rollStat(existing, pool, AscensionCoresConfig.maxLevel, random);
+        return rollStat(existing, pool, Integer.MAX_VALUE, random);
     }
 
-    public static RolledStat rollStat(List<RolledStat> existing, List<StatDef> pool, int level) {
-        return rollStat(existing, pool, level, RANDOM);
+    public static RolledStat rollStat(List<RolledStat> existing, List<StatDef> pool, int currentLevel) {
+        return rollStat(existing, pool, currentLevel, RANDOM);
     }
 
-    public static RolledStat rollStat(List<RolledStat> existing, List<StatDef> pool, int level, Random random) {
+    /** Rolls only from stats whose {@code minLevel <= currentLevel}. */
+    public static RolledStat rollStat(List<RolledStat> existing, List<StatDef> pool, int currentLevel, Random random) {
         Set<String> existingIds = existing.stream().map(RolledStat::id).collect(Collectors.toSet());
         List<StatDef> available = pool.stream()
-            .filter(def -> def.minLevel() <= level)
             .filter(def -> !existingIds.contains(def.id()))
+            .filter(def -> def.minLevel() <= currentLevel)
             .toList();
         if (available.isEmpty()) return null;
 

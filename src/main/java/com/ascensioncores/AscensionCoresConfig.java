@@ -16,7 +16,6 @@ public final class AscensionCoresConfig {
     public static int baseAscensionCoreCost = 4;
     public static boolean showInventoryLevelMarkers = true;
     public static boolean playAnvilFeedback = true;
-    public static boolean enableStaminaAttributes = true;
     public static boolean enableBetterVanillaMobsIntegration = true;
     public static int upgradeXpCostLevel1 = 2;
     public static int upgradeXpCostLevel2 = 4;
@@ -28,19 +27,21 @@ public final class AscensionCoresConfig {
     public static int mobAscensionCoreMinDrop = 1;
     public static int mobAscensionCoreMaxDrop = 2;
     public static double betterVanillaMobsAscensionCoreDropChance = 0.04;
-    public static double betterVanillaMobsAscensionCoreDropChancePerStar = 0.015;
-    public static double betterVanillaMobsChaosCoreDropChance = 0.003;
-    public static double betterVanillaMobsChaosCoreDropChancePerStar = 0.003;
+    public static double betterVanillaMobsAscensionCoreDropChancePerStar = 0.04;
+    public static double betterVanillaMobsChaosCoreDropChance = 0.01;
+    public static double betterVanillaMobsChaosCoreDropChancePerStar = 0.01;
 
-    public static double levelCoreChestChance = 0.25;
-    public static int levelCoreChestMinDrop = 1;
-    public static int levelCoreChestMaxDrop = 3;
-    public static double treasureAscensionCoreChance = 0.30;
+    public static double levelCoreChestChance = 0.60;
+    public static int levelCoreChestMinDrop = 2;
+    public static int levelCoreChestMaxDrop = 4;
+    public static double treasureAscensionCoreChance = 0.60;
     public static double ancientCityAscensionCoreChance = 0.50;
     public static double ancientCityChaosCoreChance = 0.20;
     public static double treasureChaosCoreChance = 0.10;
     public static int naturalLootMaxLevel = 2;
     public static int treasureNaturalLootMaxLevel = 4;
+    public static double unenchantedLootAscensionChance = 0.05;
+    public static double treasureUnenchantedLootAscensionChance = 0.15;
 
     private static final Path CONFIG_PATH = Path.of("config", "ascensioncores.properties");
 
@@ -61,7 +62,6 @@ public final class AscensionCoresConfig {
         baseAscensionCoreCost = parseInt(props, "baseAscensionCoreCost", baseAscensionCoreCost, 1, 64, logger);
         showInventoryLevelMarkers = parseBoolean(props, "showInventoryLevelMarkers", showInventoryLevelMarkers, logger);
         playAnvilFeedback = parseBoolean(props, "playAnvilFeedback", playAnvilFeedback, logger);
-        enableStaminaAttributes = parseBoolean(props, "enableStaminaAttributes", enableStaminaAttributes, logger);
         enableBetterVanillaMobsIntegration = parseBoolean(props, "enableBetterVanillaMobsIntegration", enableBetterVanillaMobsIntegration, logger);
         upgradeXpCostLevel1 = parseInt(props, "upgradeXpCostLevel1", upgradeXpCostLevel1, 0, 1000, logger);
         upgradeXpCostLevel2 = parseInt(props, "upgradeXpCostLevel2", upgradeXpCostLevel2, 0, 1000, logger);
@@ -88,6 +88,8 @@ public final class AscensionCoresConfig {
         treasureChaosCoreChance = parseDouble(props, "treasureChaosCoreChance", treasureChaosCoreChance, 0.0, 1.0, logger);
         naturalLootMaxLevel = parseInt(props, "naturalLootMaxLevel", naturalLootMaxLevel, 0, maxLevel, logger);
         treasureNaturalLootMaxLevel = parseInt(props, "treasureNaturalLootMaxLevel", treasureNaturalLootMaxLevel, 0, maxLevel, logger);
+        unenchantedLootAscensionChance = parseDouble(props, "unenchantedLootAscensionChance", unenchantedLootAscensionChance, 0.0, 1.0, logger);
+        treasureUnenchantedLootAscensionChance = parseDouble(props, "treasureUnenchantedLootAscensionChance", treasureUnenchantedLootAscensionChance, 0.0, 1.0, logger);
         StatPool.refresh();
 
         save(logger);
@@ -106,6 +108,8 @@ public final class AscensionCoresConfig {
             case "ancientCityAscensionCoreChance" -> ancientCityAscensionCoreChance;
             case "treasureChaosCoreChance" -> treasureChaosCoreChance;
             case "ancientCityChaosCoreChance" -> ancientCityChaosCoreChance;
+            case "unenchantedLootAscensionChance" -> unenchantedLootAscensionChance;
+            case "treasureUnenchantedLootAscensionChance" -> treasureUnenchantedLootAscensionChance;
             default -> 0.0;
         };
     }
@@ -145,9 +149,6 @@ public final class AscensionCoresConfig {
                 showInventoryLevelMarkers=%s
                 # If true, anvil upgrade/reroll plays an audio cue on success.
                 playAnvilFeedback=%s
-                # If true, optional stamina stats (from the Stamina Attributes mod) are
-                # added to the rolling pools when that mod is present.
-                enableStaminaAttributes=%s
                 # If true, BetterVanillaMobs "touched" mobs get the special
                 # rarity-scaled drop rates below instead of the generic mob rates.
                 enableBetterVanillaMobsIntegration=%s
@@ -204,12 +205,15 @@ public final class AscensionCoresConfig {
                 # Max level naturally-generated enchanted gear can receive in high-value treasure
                 # tables: Bastion Treasure, End City Treasure, and Ancient City.
                 treasureNaturalLootMaxLevel=%d
+                
+                # Chance for a completely UNENCHANTED piece of gear to naturally roll Ascension levels.
+                unenchantedLootAscensionChance=%.4f
+                treasureUnenchantedLootAscensionChance=%.4f
                 """.formatted(
                     maxLevel,
                     baseAscensionCoreCost,
                     showInventoryLevelMarkers,
                     playAnvilFeedback,
-                    enableStaminaAttributes,
                     enableBetterVanillaMobsIntegration,
                     upgradeXpCostLevel1,
                     upgradeXpCostLevel2,
@@ -231,7 +235,9 @@ public final class AscensionCoresConfig {
                     ancientCityChaosCoreChance,
                     treasureChaosCoreChance,
                     naturalLootMaxLevel,
-                    treasureNaturalLootMaxLevel
+                    treasureNaturalLootMaxLevel,
+                    unenchantedLootAscensionChance,
+                    treasureUnenchantedLootAscensionChance
                 );
     }
 

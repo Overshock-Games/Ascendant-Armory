@@ -32,9 +32,9 @@
     "puffish_attributes": "*"
   },
   "suggests": {
-    "staminaattributes": "*",
     "progression_reborn": "*",
     "farmersdelight": "*",
-    "moredelight": "*"
+    "moredelight": "*",
+    "artifacts": "*"
   }
 }
