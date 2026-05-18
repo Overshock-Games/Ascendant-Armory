@@ -1,0 +1,3 @@
+execute at @a[gamemode=!creative,gamemode=!spectator] as @e[type=minecraft:bogged,tag=fkbm.bogged.shield,scores={fkbm.cd1=..0},distance=..32] at @s as @n[type=minecraft:arrow,tag=!fkbm.bogged.blocked,distance=..3,nbt={inGround:0b}] at @s run function fkbm:systems/mobs/loop/skill/bogged/arrowblock
+
+execute at @e[type=minecraft:bogged,tag=fkbm.bogged.shield] if entity @p[gamemode=!creative,gamemode=!spectator,distance=..32] run schedule function fkbm:systems/mobs/loop/skill/bogged/arrowblock_loop 1t

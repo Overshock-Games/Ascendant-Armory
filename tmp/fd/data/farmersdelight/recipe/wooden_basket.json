@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": "farmersdelight:canvas",
+    "/": "minecraft:stick"
+  },
+  "pattern": [
+    "/ /",
+    "# #",
+    "/#/"
+  ],
+  "result": {
+    "id": "farmersdelight:wooden_basket"
+  }
+}

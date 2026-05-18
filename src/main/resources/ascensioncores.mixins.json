@@ -5,9 +5,16 @@
   "mixins": [
     "ItemCombinerMenuAccessor",
     "AnvilMenuMixin",
-    "EnchantmentMenuMixin"
+    "EnchantmentMenuMixin",
+    "PlayerAttackMixin",
+    "LivingEntityDamageMixin",
+    "LootTableMixin",
+    "GrindstoneMenuMixin",
+    "ProjectileDamageMixin"
   ],
-  "client": [],
+  "client": [
+    "AbstractContainerScreenAccessor"
+  ],
   "server": [],
   "injectors": {
     "defaultRequire": 1

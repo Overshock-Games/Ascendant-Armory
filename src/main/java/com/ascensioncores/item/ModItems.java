@@ -15,10 +15,10 @@ public final class ModItems {
         return ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("ascensioncores", path));
     }
 
-    public static final Item UPGRADE_CORE = Registry.register(
+    public static final Item ASCENSION_CORE = Registry.register(
         BuiltInRegistries.ITEM,
-        key("upgrade_core"),
-        new Item(new Item.Properties().stacksTo(64).setId(key("upgrade_core")))
+        key("ascension_core"),
+        new Item(new Item.Properties().stacksTo(64).setId(key("ascension_core")))
     );
 
     public static final Item CHAOS_CORE = Registry.register(
@@ -29,7 +29,7 @@ public final class ModItems {
 
     public static void register() {
         CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.INGREDIENTS).register(entries -> {
-            entries.accept(UPGRADE_CORE);
+            entries.accept(ASCENSION_CORE);
             entries.accept(CHAOS_CORE);
         });
     }

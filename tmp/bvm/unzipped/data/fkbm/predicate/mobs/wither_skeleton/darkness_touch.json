@@ -1,0 +1,20 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "effects": {
+      "minecraft:slowness": {
+        "amplifier": 1,
+        "ambient": false
+      },
+      "minecraft:wither": {
+        "amplifier": 3,
+        "ambient": false
+      },
+      "minecraft:darkness": {
+        "amplifier": 0,
+        "ambient": false
+      }
+    }
+  }
+}

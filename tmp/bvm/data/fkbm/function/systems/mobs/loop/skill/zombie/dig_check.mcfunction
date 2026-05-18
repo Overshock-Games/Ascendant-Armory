@@ -1,0 +1,3 @@
+execute if entity @p[distance=..12,gamemode=!creative,gamemode=!spectator] positioned ~-2 ~-1 ~-2 if entity @p[dy=-12,dx=4,dz=4] at @s positioned ~ ~-.4 ~ if block ~ ~ ~ #fkbm:zombie_dig align xyz positioned ~ ~.5 ~ run function fkbm:systems/mobs/loop/skill/zombie/dig
+execute if entity @p[distance=..8,gamemode=!creative,gamemode=!spectator] facing entity @p feet positioned ^ ^ ^1 positioned ~ ~1.2 ~ if block ~ ~ ~ #fkbm:zombie_dig align xyz positioned ~ ~.5 ~ run function fkbm:systems/mobs/loop/skill/zombie/dig
+execute if entity @p[distance=..8,gamemode=!creative,gamemode=!spectator] facing entity @p feet positioned ^ ^ ^1 positioned ~ ~0.2 ~ if block ~ ~ ~ #fkbm:zombie_dig align xyz positioned ~ ~.5 ~ run function fkbm:systems/mobs/loop/skill/zombie/dig

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "#c:foods/bread",
+    "#c:foods/cooked_beef",
+    "#c:foods/leafy_green"
+  ],
+  "result": {
+    "count": 1,
+    "id": "moredelight:steak_sandwich"
+  }
+}

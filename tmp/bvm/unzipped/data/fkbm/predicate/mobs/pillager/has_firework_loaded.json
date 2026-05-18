@@ -1,0 +1,30 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "items": "minecraft:crossbow",
+        "count": 1,
+        "components": {
+          "minecraft:charged_projectiles": [
+            {
+              "id": "minecraft:firework_rocket",
+              "count": 1,
+              "components": {
+                "minecraft:fireworks": {
+                  "flight_duration": 0,
+                  "explosions": [
+                    {
+                      "shape": "small_ball"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

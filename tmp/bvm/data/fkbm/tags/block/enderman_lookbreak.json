@@ -1,0 +1,12 @@
+{
+  "values": [
+    "minecraft:air",
+    "#minecraft:leaves",
+    "#minecraft:dirt",
+    "#minecraft:enderman_holdable",
+    "#minecraft:mineable/shovel",
+    "#minecraft:wooden_fences",
+    "#minecraft:wooden_doors",
+    "#minecraft:wool"
+  ]
+}

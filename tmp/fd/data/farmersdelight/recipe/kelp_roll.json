@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": "minecraft:dried_kelp",
+    "R": "farmersdelight:cooked_rice",
+    "X": "#c:foods/vegetable"
+  },
+  "pattern": [
+    "RXR",
+    "###"
+  ],
+  "result": {
+    "id": "farmersdelight:kelp_roll"
+  }
+}

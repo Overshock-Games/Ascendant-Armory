@@ -1,0 +1,36 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:entity_hurt_player",
+      "conditions": {
+        "player": [
+
+
+
+
+
+
+
+
+
+
+
+
+          {
+            "condition": "minecraft:reference",
+            "name": "fkbm:generic/in_water/feet"
+          }
+        ],
+        "damage": {
+          "source_entity": {
+            "type": "minecraft:drowned",
+            "nbt": "{Tags:[\"fkbm.drowned.hitslow\"]}"
+          }
+        }
+      }
+    }
+  },
+  "rewards": {
+    "function": "fkbm:systems/mobs/loop/skill/drowned/hit_slow"
+  }
+}

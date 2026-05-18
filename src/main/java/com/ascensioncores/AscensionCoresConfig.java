@@ -1,5 +1,6 @@
 package com.ascensioncores;
 
+import com.ascensioncores.gear.StatPool;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -11,7 +12,35 @@ import java.util.Properties;
 
 public final class AscensionCoresConfig {
 
-    // Add config fields here.
+    public static int maxLevel = 4;
+    public static int baseAscensionCoreCost = 4;
+    public static boolean showInventoryLevelMarkers = true;
+    public static boolean playAnvilFeedback = true;
+    public static boolean enableStaminaAttributes = true;
+    public static boolean enableBetterVanillaMobsIntegration = true;
+    public static int upgradeXpCostLevel1 = 2;
+    public static int upgradeXpCostLevel2 = 4;
+    public static int upgradeXpCostLevel3 = 6;
+    public static int upgradeXpCostLevel4 = 8;
+
+    public static double mobAscensionCoreDropChancePerEquipment = 0.02;
+    public static double mobChaosCoreDropChance = 0.006;
+    public static int mobAscensionCoreMinDrop = 1;
+    public static int mobAscensionCoreMaxDrop = 2;
+    public static double betterVanillaMobsAscensionCoreDropChance = 0.04;
+    public static double betterVanillaMobsAscensionCoreDropChancePerStar = 0.015;
+    public static double betterVanillaMobsChaosCoreDropChance = 0.003;
+    public static double betterVanillaMobsChaosCoreDropChancePerStar = 0.003;
+
+    public static double levelCoreChestChance = 0.25;
+    public static int levelCoreChestMinDrop = 1;
+    public static int levelCoreChestMaxDrop = 3;
+    public static double treasureAscensionCoreChance = 0.30;
+    public static double ancientCityAscensionCoreChance = 0.50;
+    public static double ancientCityChaosCoreChance = 0.20;
+    public static double treasureChaosCoreChance = 0.10;
+    public static int naturalLootMaxLevel = 2;
+    public static int treasureNaturalLootMaxLevel = 4;
 
     private static final Path CONFIG_PATH = Path.of("config", "ascensioncores.properties");
 
@@ -28,7 +57,38 @@ public final class AscensionCoresConfig {
             }
         }
 
-        // Parse config fields here.
+        maxLevel = parseInt(props, "maxLevel", maxLevel, 1, 4, logger);
+        baseAscensionCoreCost = parseInt(props, "baseAscensionCoreCost", baseAscensionCoreCost, 1, 64, logger);
+        showInventoryLevelMarkers = parseBoolean(props, "showInventoryLevelMarkers", showInventoryLevelMarkers, logger);
+        playAnvilFeedback = parseBoolean(props, "playAnvilFeedback", playAnvilFeedback, logger);
+        enableStaminaAttributes = parseBoolean(props, "enableStaminaAttributes", enableStaminaAttributes, logger);
+        enableBetterVanillaMobsIntegration = parseBoolean(props, "enableBetterVanillaMobsIntegration", enableBetterVanillaMobsIntegration, logger);
+        upgradeXpCostLevel1 = parseInt(props, "upgradeXpCostLevel1", upgradeXpCostLevel1, 0, 1000, logger);
+        upgradeXpCostLevel2 = parseInt(props, "upgradeXpCostLevel2", upgradeXpCostLevel2, 0, 1000, logger);
+        upgradeXpCostLevel3 = parseInt(props, "upgradeXpCostLevel3", upgradeXpCostLevel3, 0, 1000, logger);
+        upgradeXpCostLevel4 = parseInt(props, "upgradeXpCostLevel4", upgradeXpCostLevel4, 0, 1000, logger);
+
+        mobAscensionCoreDropChancePerEquipment = parseDouble(props, "mobAscensionCoreDropChancePerEquipment", mobAscensionCoreDropChancePerEquipment, 0.0, 1.0, logger);
+        mobChaosCoreDropChance = parseDouble(props, "mobChaosCoreDropChance", mobChaosCoreDropChance, 0.0, 1.0, logger);
+        mobAscensionCoreMinDrop = parseInt(props, "mobAscensionCoreMinDrop", mobAscensionCoreMinDrop, 1, 64, logger);
+        mobAscensionCoreMaxDrop = parseInt(props, "mobAscensionCoreMaxDrop", mobAscensionCoreMaxDrop, mobAscensionCoreMinDrop, 64, logger);
+        betterVanillaMobsAscensionCoreDropChance = parseDouble(props, "betterVanillaMobsAscensionCoreDropChance", betterVanillaMobsAscensionCoreDropChance, 0.0, 1.0, logger);
+        betterVanillaMobsAscensionCoreDropChancePerStar = parseDouble(props, "betterVanillaMobsAscensionCoreDropChancePerStar",
+            betterVanillaMobsAscensionCoreDropChancePerStar, 0.0, 1.0, logger);
+        betterVanillaMobsChaosCoreDropChance = parseDouble(props, "betterVanillaMobsChaosCoreDropChance", betterVanillaMobsChaosCoreDropChance, 0.0, 1.0, logger);
+        betterVanillaMobsChaosCoreDropChancePerStar = parseDouble(props, "betterVanillaMobsChaosCoreDropChancePerStar",
+            betterVanillaMobsChaosCoreDropChancePerStar, 0.0, 1.0, logger);
+
+        levelCoreChestChance = parseDouble(props, "levelCoreChestChance", levelCoreChestChance, 0.0, 1.0, logger);
+        levelCoreChestMinDrop = parseInt(props, "levelCoreChestMinDrop", levelCoreChestMinDrop, 1, 64, logger);
+        levelCoreChestMaxDrop = parseInt(props, "levelCoreChestMaxDrop", levelCoreChestMaxDrop, levelCoreChestMinDrop, 64, logger);
+        treasureAscensionCoreChance = parseDouble(props, "treasureAscensionCoreChance", treasureAscensionCoreChance, 0.0, 1.0, logger);
+        ancientCityAscensionCoreChance = parseDouble(props, "ancientCityAscensionCoreChance", ancientCityAscensionCoreChance, 0.0, 1.0, logger);
+        ancientCityChaosCoreChance = parseDouble(props, "ancientCityChaosCoreChance", ancientCityChaosCoreChance, 0.0, 1.0, logger);
+        treasureChaosCoreChance = parseDouble(props, "treasureChaosCoreChance", treasureChaosCoreChance, 0.0, 1.0, logger);
+        naturalLootMaxLevel = parseInt(props, "naturalLootMaxLevel", naturalLootMaxLevel, 0, maxLevel, logger);
+        treasureNaturalLootMaxLevel = parseInt(props, "treasureNaturalLootMaxLevel", treasureNaturalLootMaxLevel, 0, maxLevel, logger);
+        StatPool.refresh();
 
         save(logger);
         logger.info("[AscensionCores] Config loaded");
@@ -36,6 +96,27 @@ public final class AscensionCoresConfig {
 
     public static void reload(Logger logger) {
         load(logger);
+    }
+
+    /** Live config lookup used by AscensionConfigChanceCondition (chest loot rates). */
+    public static double getChance(String key) {
+        return switch (key) {
+            case "levelCoreChestChance" -> levelCoreChestChance;
+            case "treasureAscensionCoreChance" -> treasureAscensionCoreChance;
+            case "ancientCityAscensionCoreChance" -> ancientCityAscensionCoreChance;
+            case "treasureChaosCoreChance" -> treasureChaosCoreChance;
+            case "ancientCityChaosCoreChance" -> ancientCityChaosCoreChance;
+            default -> 0.0;
+        };
+    }
+
+    public static int getUpgradeXpCost(int currentLevel) {
+        return switch (currentLevel) {
+            case 0 -> upgradeXpCostLevel1;
+            case 1 -> upgradeXpCostLevel2;
+            case 2 -> upgradeXpCostLevel3;
+            default -> upgradeXpCostLevel4;
+        };
     }
 
     public static void save(Logger logger) {
@@ -51,7 +132,107 @@ public final class AscensionCoresConfig {
         return """
                 # AscensionCores configuration
                 # Changes take effect after /ascensioncores reload or server restart.
-                """;
+
+                # ── Core gameplay ─────────────────────────────────────────────────
+                # Max ascension level any gear can reach (1-4). Tooltip caps and the
+                # number of rolled stats scale with this.
+                maxLevel=%d
+                # Base used in the per-level core cost formula: cost = base^level.
+                # Default 4 means: L0->L1 costs 1, L1->L2 costs 4, L2->L3 costs 16, L3->L4 costs 64.
+                baseAscensionCoreCost=%d
+                # If true, leveled gear shows colored corner brackets in the inventory grid:
+                # one bracket per ascension level, color-coded by tier (white/cyan/magenta/gold).
+                showInventoryLevelMarkers=%s
+                # If true, anvil upgrade/reroll plays an audio cue on success.
+                playAnvilFeedback=%s
+                # If true, optional stamina stats (from the Stamina Attributes mod) are
+                # added to the rolling pools when that mod is present.
+                enableStaminaAttributes=%s
+                # If true, BetterVanillaMobs "touched" mobs get the special
+                # rarity-scaled drop rates below instead of the generic mob rates.
+                enableBetterVanillaMobsIntegration=%s
+                # XP levels charged by the anvil for each Ascension upgrade.
+                # Level 1 means L0->L1, Level 2 means L1->L2, etc.
+                upgradeXpCostLevel1=%d
+                upgradeXpCostLevel2=%d
+                upgradeXpCostLevel3=%d
+                upgradeXpCostLevel4=%d
+
+                # ── Mob drops ─────────────────────────────────────────────────────
+                # Chance per piece of gear (armor or weapon) a hostile mob has equipped to drop Ascension Cores.
+                mobAscensionCoreDropChancePerEquipment=%.4f
+                # Chance per kill for a non-BVM hostile mob to drop a Chaos Core.
+                # BVM-tagged mobs use the BVM chaos rates below instead.
+                mobChaosCoreDropChance=%.4f
+                # When a mob drops Ascension Cores, how many drop (uniform between min and max).
+                mobAscensionCoreMinDrop=%d
+                mobAscensionCoreMaxDrop=%d
+                # BVM-only override: Ascension Core chance for a 1-star touched mob.
+                # 2-5 star mobs add the per-star value below for each extra star.
+                # Formula: chance = base + ((stars - 1) * perStar).
+                betterVanillaMobsAscensionCoreDropChance=%.4f
+                # Added to the Ascension Core chance for each BVM rarity star after the first.
+                # Default: 1-star 4%%, 2-star 5.5%%, 3-star 7%%, 4-star 8.5%%, 5-star/Alpha 10%%.
+                betterVanillaMobsAscensionCoreDropChancePerStar=%.4f
+                # BVM-only override: Chaos Core chance for a 1-star touched mob.
+                # Replaces mobChaosCoreDropChance for BVM mobs.
+                betterVanillaMobsChaosCoreDropChance=%.4f
+                # Added to the Chaos Core chance for each BVM rarity star after the first.
+                # Default: 1-star 0.3%%, 2-star 0.6%%, 3-star 0.9%%, 4-star 1.2%%, 5-star/Alpha 1.5%%.
+                betterVanillaMobsChaosCoreDropChancePerStar=%.4f
+
+                # ── Chest loot ────────────────────────────────────────────────────
+                # Chance per generated chest (dungeons, mineshafts, strongholds, temples,
+                # shipwrecks, trial chambers, etc.) to contain Ascension Cores.
+                levelCoreChestChance=%.4f
+                # When a chest rolls cores, how many drop (uniform between min and max).
+                levelCoreChestMinDrop=%d
+                levelCoreChestMaxDrop=%d
+                # Chance for Ascension Cores in Bastion Treasure and End City Treasure chests
+                # (these chests use mobAscensionCoreMin/MaxDrop for the count).
+                treasureAscensionCoreChance=%.4f
+                # Chance for Ascension Cores in Ancient City chests
+                # (uses mobAscensionCoreMin/MaxDrop for the count).
+                ancientCityAscensionCoreChance=%.4f
+                # Chance for a Chaos Core in Ancient City chests.
+                ancientCityChaosCoreChance=%.4f
+                # Chance for a Chaos Core in Bastion Treasure and End City Treasure chests.
+                treasureChaosCoreChance=%.4f
+                # Max level naturally-generated enchanted gear can receive in normal loot tables.
+                # Set to 0 to disable natural loot auto-leveling outside treasure tables.
+                naturalLootMaxLevel=%d
+                # Max level naturally-generated enchanted gear can receive in high-value treasure
+                # tables: Bastion Treasure, End City Treasure, and Ancient City.
+                treasureNaturalLootMaxLevel=%d
+                """.formatted(
+                    maxLevel,
+                    baseAscensionCoreCost,
+                    showInventoryLevelMarkers,
+                    playAnvilFeedback,
+                    enableStaminaAttributes,
+                    enableBetterVanillaMobsIntegration,
+                    upgradeXpCostLevel1,
+                    upgradeXpCostLevel2,
+                    upgradeXpCostLevel3,
+                    upgradeXpCostLevel4,
+                    mobAscensionCoreDropChancePerEquipment,
+                    mobChaosCoreDropChance,
+                    mobAscensionCoreMinDrop,
+                    mobAscensionCoreMaxDrop,
+                    betterVanillaMobsAscensionCoreDropChance,
+                    betterVanillaMobsAscensionCoreDropChancePerStar,
+                    betterVanillaMobsChaosCoreDropChance,
+                    betterVanillaMobsChaosCoreDropChancePerStar,
+                    levelCoreChestChance,
+                    levelCoreChestMinDrop,
+                    levelCoreChestMaxDrop,
+                    treasureAscensionCoreChance,
+                    ancientCityAscensionCoreChance,
+                    ancientCityChaosCoreChance,
+                    treasureChaosCoreChance,
+                    naturalLootMaxLevel,
+                    treasureNaturalLootMaxLevel
+                );
     }
 
     static boolean parseBoolean(Properties props, String key, boolean def, Logger logger) {
@@ -79,4 +260,21 @@ public final class AscensionCoresConfig {
             return def;
         }
     }
+
+    static double parseDouble(Properties props, String key, double def, double min, double max, Logger logger) {
+        String raw = props.getProperty(key);
+        if (raw == null) return def;
+        try {
+            double val = Double.parseDouble(raw.trim());
+            if (val < min || val > max) {
+                logger.warn("[AscensionCores] '{}' value {} out of range [{}, {}], clamping", key, val, min, max);
+                return Math.max(min, Math.min(max, val));
+            }
+            return val;
+        } catch (NumberFormatException e) {
+            logger.warn("[AscensionCores] '{}' is not a valid number ('{}'), using default {}", key, raw, def);
+            return def;
+        }
+    }
+
 }

@@ -13,6 +13,14 @@ base {
 repositories {
     mavenCentral()
     maven { url = uri("https://maven.puffish.net") }
+    maven {
+        name = "Jared's maven"
+        url = "https://maven.blamejared.com/"
+    }
+    maven {
+        name = "ModMaven"
+        url = "https://modmaven.dev/"
+    }
 }
 
 dependencies {
@@ -21,6 +29,9 @@ dependencies {
     implementation "net.fabricmc:fabric-loader:${loader_version}"
     implementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
     implementation "net.puffish:attributesmod:0.8.2+26.1:fabric"
+
+    compileOnly "mezz.jei:jei-26.1.2-fabric-api:29.5.0.26"
+    runtimeOnly "mezz.jei:jei-26.1.2-fabric:29.5.0.26"
 }
 
 java {

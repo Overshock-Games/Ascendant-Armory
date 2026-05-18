@@ -1,0 +1,21 @@
+{
+  "condition": "minecraft:any_of",
+  "terms": [
+    {
+      "condition": "minecraft:reference",
+      "name": "fkbmtool:input/forward"
+    },
+    {
+      "condition": "minecraft:reference",
+      "name": "fkbmtool:input/backward"
+    },
+    {
+      "condition": "minecraft:reference",
+      "name": "fkbmtool:input/left"
+    },
+    {
+      "condition": "minecraft:reference",
+      "name": "fkbmtool:input/right"
+    }
+  ]
+}

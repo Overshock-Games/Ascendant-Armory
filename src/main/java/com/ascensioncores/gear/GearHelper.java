@@ -1,26 +1,46 @@
 package com.ascensioncores.gear;
 
+import com.ascensioncores.AscensionCoresConfig;
+import com.ascensioncores.compat.FarmersDelightCompat;
+import com.ascensioncores.compat.MoreDelightCompat;
+import com.ascensioncores.compat.ProgressionRebornCompat;
 import com.ascensioncores.component.ModComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.item.equipment.Equippable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Random;
+import java.util.Set;
 
 public final class GearHelper {
 
     // ── Classification ──────────────────────────────────────────────────────
 
     public static boolean isWeapon(ItemStack stack) {
-        return stack.has(DataComponents.WEAPON);
+        Item item = stack.getItem();
+        return stack.has(DataComponents.WEAPON)
+            || item == Items.TRIDENT
+            || item == Items.MACE
+            || item == Items.BOW
+            || item == Items.CROSSBOW
+            || isNamedRangedWeapon(stack);
     }
 
     public static boolean isArmor(ItemStack stack) {
@@ -58,30 +78,86 @@ public final class GearHelper {
     // ── Upgrade operations ──────────────────────────────────────────────────
 
     public static void levelUp(ItemStack stack) {
-        int newLevel = getLevel(stack) + 1;
-        stack.set(ModComponents.ASCENSION_LEVEL, newLevel);
+        setLevel(stack, getLevel(stack) + 1);
+    }
 
+    public static void setLevel(ItemStack stack, int requestedLevel) {
+        int newLevel = Math.max(0, Math.min(requestedLevel, getMaxLevel()));
         List<RolledStat> stats = new ArrayList<>(getRolledStats(stack));
-        if (newLevel <= getMaterialCapacity(stack)) {
-            RolledStat rolled = StatPool.rollStat(stats, getPool(stack));
-            if (rolled != null) stats.add(rolled);
+
+        int statCount = Math.min(newLevel, getMaterialCapacity(stack));
+        while (stats.size() > statCount) {
+            stats.remove(stats.size() - 1);
         }
+        while (stats.size() < statCount) {
+            RolledStat rolled = StatPool.rollStat(stats, getPool(stack), newLevel);
+            if (rolled == null) break;
+            stats.add(rolled);
+        }
+
+        stack.set(ModComponents.ASCENSION_LEVEL, newLevel);
         stack.set(ModComponents.ROLLED_STATS, stats);
         rebuildAttributes(stack, newLevel, stats);
     }
 
     public static void reroll(ItemStack stack) {
+        reroll(stack, new Random());
+    }
+
+    public static void rerollDeterministic(ItemStack stack) {
+        reroll(stack, new Random(getChaosRerollSeed(stack)));
+    }
+
+    private static void reroll(ItemStack stack, Random random) {
         int level = getLevel(stack);
         int statCount = Math.min(level, getMaterialCapacity(stack));
         List<StatPool.StatDef> pool = getPool(stack);
 
         List<RolledStat> stats = new ArrayList<>();
         for (int i = 0; i < statCount; i++) {
-            RolledStat s = StatPool.rollStat(stats, pool);
+            RolledStat s = StatPool.rollStat(stats, pool, level, random);
             if (s != null) stats.add(s);
         }
         stack.set(ModComponents.ROLLED_STATS, stats);
         rebuildAttributes(stack, level, stats);
+    }
+
+    private static long getChaosRerollSeed(ItemStack stack) {
+        long seed = 0x5DEECE66DL;
+        Identifier itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        seed = mixSeed(seed, itemId.toString().hashCode());
+        seed = mixSeed(seed, getLevel(stack));
+        seed = mixSeed(seed, getMaterialCapacity(stack));
+
+        for (RolledStat stat : getRolledStats(stack)) {
+            seed = mixSeed(seed, stat.id().hashCode());
+            seed = mixSeed(seed, Double.doubleToLongBits(stat.amount()));
+        }
+        return seed;
+    }
+
+    private static long mixSeed(long seed, long value) {
+        long mixed = seed ^ (value + 0x9E3779B97F4A7C15L + (seed << 6) + (seed >>> 2));
+        return mixed ^ (mixed >>> 32);
+    }
+
+    /** Counts enchantments on the stack, excluding curses (Binding, Vanishing). */
+    public static int countNonCurseEnchantments(ItemStack stack) {
+        ItemEnchantments enchants = stack.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+        int count = 0;
+        for (var entry : enchants.entrySet()) {
+            if (!entry.getKey().is(EnchantmentTags.CURSE)) count++;
+        }
+        return count;
+    }
+
+    public static int getMaxLevel() {
+        return AscensionCoresConfig.maxLevel;
+    }
+
+    public static int getAscensionCoreCost(int currentLevel) {
+        if (currentLevel <= 0) return 1;
+        return (int) Math.pow(AscensionCoresConfig.baseAscensionCoreCost, currentLevel);
     }
 
     // ── Attribute building ──────────────────────────────────────────────────
@@ -89,30 +165,47 @@ public final class GearHelper {
     public static void rebuildAttributes(ItemStack stack, int level, List<RolledStat> stats) {
         EquipmentSlotGroup slotGroup = isArmor(stack) ? getArmorSlotGroup(stack) : EquipmentSlotGroup.MAINHAND;
 
-        ItemAttributeModifiers existing = stack.getOrDefault(
+        ItemAttributeModifiers vanilla = stack.getPrototype().getOrDefault(
+            DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
+        ItemAttributeModifiers current = stack.getOrDefault(
             DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
 
         ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.builder();
-        for (ItemAttributeModifiers.Entry entry : existing.modifiers()) {
-            if (!"ascensioncores".equals(entry.modifier().id().getNamespace())) {
-                builder.add(entry.attribute(), entry.modifier(), entry.slot());
-            }
-        }
+        Set<Identifier> addedModifiers = new HashSet<>();
+        addNonAscensionModifiers(builder, vanilla, addedModifiers);
+        addNonAscensionModifiers(builder, current, addedModifiers);
 
         for (int i = 0; i < stats.size(); i++) {
             RolledStat rolled = stats.get(i);
             StatPool.StatDef def = StatPool.getById(rolled.id());
-            if (def == null) continue;
+            if (def == null || def.attribute() == null) continue;
             double amount = rolled.amount() * (level - i);
             AttributeModifier mod = new AttributeModifier(
                 Identifier.fromNamespaceAndPath("ascensioncores", "stat_" + def.id() + "_" + i),
                 amount,
-                AttributeModifier.Operation.ADD_VALUE
+                def.operation()
             );
-            builder.add(def.attribute(), mod, slotGroup);
+            builder.add(def.attribute(), mod, slotGroup, ItemAttributeModifiers.Display.hidden());
         }
 
         stack.set(DataComponents.ATTRIBUTE_MODIFIERS, builder.build());
+
+        TooltipDisplay display = stack.getOrDefault(DataComponents.TOOLTIP_DISPLAY, TooltipDisplay.DEFAULT);
+        stack.set(DataComponents.TOOLTIP_DISPLAY,
+            display.withHidden(DataComponents.ATTRIBUTE_MODIFIERS, false));
+    }
+
+    private static void addNonAscensionModifiers(
+            ItemAttributeModifiers.Builder builder,
+            ItemAttributeModifiers modifiers,
+            Set<Identifier> addedModifiers) {
+        for (ItemAttributeModifiers.Entry entry : modifiers.modifiers()) {
+            Identifier id = entry.modifier().id();
+            if ("ascensioncores".equals(id.getNamespace()) || !addedModifiers.add(id)) {
+                continue;
+            }
+            builder.add(entry.attribute(), entry.modifier(), entry.slot(), entry.display());
+        }
     }
 
     // ── Material capacity ───────────────────────────────────────────────────
@@ -124,49 +217,163 @@ public final class GearHelper {
         if (isTier2(item)) return 2;
         if (isTier3(item)) return 3;
         if (isTier4(item)) return 4;
-        return 0;
+        int farmersDelightCapacity = FarmersDelightCompat.getMaterialCapacity(item);
+        if (farmersDelightCapacity > 0) return farmersDelightCapacity;
+        int moreDelightCapacity = MoreDelightCompat.getMaterialCapacity(item);
+        if (moreDelightCapacity > 0) return moreDelightCapacity;
+        int progressionRebornCapacity = ProgressionRebornCompat.getMaterialCapacity(item);
+        if (progressionRebornCapacity > 0) return progressionRebornCapacity;
+        int namedMaterialCapacity = getNamedMaterialCapacity(stack);
+        if (namedMaterialCapacity >= 0) return namedMaterialCapacity;
+        return inferMaterialCapacity(stack);
     }
 
     private static boolean isTier0(Item item) {
-        return item == Items.WOODEN_SWORD   || item == Items.WOODEN_AXE
+        return item == Items.WOODEN_SWORD   || item == Items.WOODEN_AXE   || item == Items.WOODEN_SPEAR
             || item == Items.WOODEN_PICKAXE || item == Items.WOODEN_SHOVEL || item == Items.WOODEN_HOE
-            || item == Items.GOLDEN_SWORD   || item == Items.GOLDEN_AXE
+            || item == Items.GOLDEN_SWORD   || item == Items.GOLDEN_AXE   || item == Items.GOLDEN_SPEAR
             || item == Items.GOLDEN_PICKAXE || item == Items.GOLDEN_SHOVEL || item == Items.GOLDEN_HOE
             || item == Items.LEATHER_HELMET || item == Items.LEATHER_CHESTPLATE
             || item == Items.LEATHER_LEGGINGS || item == Items.LEATHER_BOOTS;
     }
 
     private static boolean isTier1(Item item) {
-        return item == Items.STONE_SWORD    || item == Items.STONE_AXE
+        return item == Items.STONE_SWORD    || item == Items.STONE_AXE   || item == Items.STONE_SPEAR
             || item == Items.STONE_PICKAXE  || item == Items.STONE_SHOVEL || item == Items.STONE_HOE
-            || item == Items.COPPER_SWORD   || item == Items.COPPER_AXE
+            || item == Items.COPPER_SWORD   || item == Items.COPPER_AXE  || item == Items.COPPER_SPEAR
             || item == Items.COPPER_PICKAXE || item == Items.COPPER_SHOVEL || item == Items.COPPER_HOE
             || item == Items.COPPER_HELMET  || item == Items.COPPER_CHESTPLATE
             || item == Items.COPPER_LEGGINGS || item == Items.COPPER_BOOTS
             || item == Items.CHAINMAIL_HELMET   || item == Items.CHAINMAIL_CHESTPLATE
-            || item == Items.CHAINMAIL_LEGGINGS || item == Items.CHAINMAIL_BOOTS;
+            || item == Items.CHAINMAIL_LEGGINGS || item == Items.CHAINMAIL_BOOTS
+            || item == Items.BOW;
     }
 
     private static boolean isTier2(Item item) {
-        return item == Items.IRON_SWORD    || item == Items.IRON_AXE
+        return item == Items.IRON_SWORD    || item == Items.IRON_AXE   || item == Items.IRON_SPEAR
             || item == Items.IRON_PICKAXE  || item == Items.IRON_SHOVEL || item == Items.IRON_HOE
             || item == Items.IRON_HELMET   || item == Items.IRON_CHESTPLATE
-            || item == Items.IRON_LEGGINGS || item == Items.IRON_BOOTS;
+            || item == Items.IRON_LEGGINGS || item == Items.IRON_BOOTS
+            || item == Items.CROSSBOW;
     }
 
     private static boolean isTier3(Item item) {
-        return item == Items.DIAMOND_SWORD    || item == Items.DIAMOND_AXE
+        return item == Items.DIAMOND_SWORD    || item == Items.DIAMOND_AXE   || item == Items.DIAMOND_SPEAR
             || item == Items.DIAMOND_PICKAXE  || item == Items.DIAMOND_SHOVEL || item == Items.DIAMOND_HOE
             || item == Items.DIAMOND_HELMET   || item == Items.DIAMOND_CHESTPLATE
             || item == Items.DIAMOND_LEGGINGS || item == Items.DIAMOND_BOOTS
-            || item == Items.TURTLE_HELMET;
+            || item == Items.TURTLE_HELMET
+            || item == Items.TRIDENT;
     }
 
     private static boolean isTier4(Item item) {
-        return item == Items.NETHERITE_SWORD    || item == Items.NETHERITE_AXE
+        return item == Items.NETHERITE_SWORD    || item == Items.NETHERITE_AXE   || item == Items.NETHERITE_SPEAR
             || item == Items.NETHERITE_PICKAXE  || item == Items.NETHERITE_SHOVEL || item == Items.NETHERITE_HOE
             || item == Items.NETHERITE_HELMET   || item == Items.NETHERITE_CHESTPLATE
-            || item == Items.NETHERITE_LEGGINGS || item == Items.NETHERITE_BOOTS;
+            || item == Items.NETHERITE_LEGGINGS || item == Items.NETHERITE_BOOTS
+            || item == Items.MACE;
+    }
+
+    private static int getNamedMaterialCapacity(ItemStack stack) {
+        if (!isGear(stack)) return -1;
+
+        Identifier id = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        if (id == null) return -1;
+
+        String[] tokens = id.getPath().toLowerCase(Locale.ROOT).split("[^a-z0-9]+");
+        if (hasToken(tokens, "netherite")) return 4;
+        if (hasToken(tokens, "diamond")) return 3;
+        if (hasToken(tokens, "iron", "steel", "rose")) return 2;
+        if (hasToken(tokens, "stone", "copper", "chainmail", "chain", "bronze")) return 1;
+        if (hasToken(tokens, "wood", "wooden", "gold", "golden", "leather", "flint")) return 0;
+        return -1;
+    }
+
+    private static boolean hasToken(String[] tokens, String... candidates) {
+        for (String token : tokens) {
+            for (String candidate : candidates) {
+                if (token.equals(candidate)) return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isNamedRangedWeapon(ItemStack stack) {
+        if (!stack.isDamageableItem()) return false;
+
+        Identifier id = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        if (id == null) return false;
+
+        String path = id.getPath().toLowerCase(Locale.ROOT);
+        return path.equals("bow")
+            || path.equals("crossbow")
+            || path.endsWith("_bow")
+            || path.endsWith("_crossbow")
+            || path.endsWith("longbow")
+            || path.endsWith("shortbow");
+    }
+
+    private static int inferMaterialCapacity(ItemStack stack) {
+        if (!isGear(stack)) return 0;
+        return Math.max(inferCapacityFromDurability(stack), inferCapacityFromBaseAttributes(stack));
+    }
+
+    private static int inferCapacityFromDurability(ItemStack stack) {
+        if (!stack.isDamageableItem()) return 0;
+
+        int maxDamage = stack.getMaxDamage();
+        if (maxDamage >= 1900) return 4;
+        if (maxDamage >= 1000) return 3;
+        if (maxDamage >= 240) return 2;
+        if (maxDamage >= 100) return 1;
+        return 0;
+    }
+
+    private static int inferCapacityFromBaseAttributes(ItemStack stack) {
+        ItemAttributeModifiers modifiers = stack.getPrototype().getOrDefault(
+            DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
+
+        if (isArmor(stack)) {
+            EquipmentSlot slot = getArmorSlot(stack);
+            if (slot == null) return 0;
+
+            double toughness = modifiers.compute(Attributes.ARMOR_TOUGHNESS, 0.0, slot);
+            if (toughness >= 3.0) return 4;
+            if (toughness >= 2.0) return 3;
+
+            double armor = modifiers.compute(Attributes.ARMOR, 0.0, slot);
+            return switch (slot) {
+                case HEAD, FEET -> {
+                    if (armor >= 3.0) yield 3;
+                    if (armor >= 2.0) yield 2;
+                    if (armor >= 1.0) yield 1;
+                    yield 0;
+                }
+                case CHEST -> {
+                    if (armor >= 8.0) yield 3;
+                    if (armor >= 6.0) yield 2;
+                    if (armor >= 5.0) yield 1;
+                    yield 0;
+                }
+                case LEGS -> {
+                    if (armor >= 6.0) yield 3;
+                    if (armor >= 5.0) yield 2;
+                    if (armor >= 4.0) yield 1;
+                    yield 0;
+                }
+                default -> 0;
+            };
+        }
+
+        if (isWeapon(stack)) {
+            double attackDamage = modifiers.compute(Attributes.ATTACK_DAMAGE, 0.0, EquipmentSlot.MAINHAND);
+            if (attackDamage >= 8.0) return 4;
+            if (attackDamage >= 6.0) return 3;
+            if (attackDamage >= 5.0) return 2;
+            if (attackDamage >= 4.0) return 1;
+        }
+
+        return 0;
     }
 
     // ── Internal helpers ────────────────────────────────────────────────────
@@ -177,15 +384,42 @@ public final class GearHelper {
         return StatPool.TOOL_POOL;
     }
 
+    public static double getScaledStatAmount(ItemStack stack, String statId) {
+        int level = getLevel(stack);
+        double total = 0.0;
+        List<RolledStat> stats = getRolledStats(stack);
+
+        for (int i = 0; i < stats.size(); i++) {
+            RolledStat rolled = stats.get(i);
+            if (rolled.id().equals(statId)) {
+                total += rolled.amount() * (level - i);
+            }
+        }
+
+        return total;
+    }
+
+    public static double getScaledArmorStatAmount(LivingEntity entity, String statId) {
+        return getScaledStatAmount(entity.getItemBySlot(EquipmentSlot.HEAD), statId)
+            + getScaledStatAmount(entity.getItemBySlot(EquipmentSlot.CHEST), statId)
+            + getScaledStatAmount(entity.getItemBySlot(EquipmentSlot.LEGS), statId)
+            + getScaledStatAmount(entity.getItemBySlot(EquipmentSlot.FEET), statId);
+    }
+
     private static EquipmentSlotGroup getArmorSlotGroup(ItemStack stack) {
-        Equippable eq = stack.get(DataComponents.EQUIPPABLE);
-        if (eq == null) return EquipmentSlotGroup.ANY;
-        return switch (eq.slot()) {
+        EquipmentSlot slot = getArmorSlot(stack);
+        if (slot == null) return EquipmentSlotGroup.ANY;
+        return switch (slot) {
             case HEAD  -> EquipmentSlotGroup.HEAD;
             case CHEST -> EquipmentSlotGroup.CHEST;
             case LEGS  -> EquipmentSlotGroup.LEGS;
             case FEET  -> EquipmentSlotGroup.FEET;
             default    -> EquipmentSlotGroup.ANY;
         };
+    }
+
+    private static EquipmentSlot getArmorSlot(ItemStack stack) {
+        Equippable eq = stack.get(DataComponents.EQUIPPABLE);
+        return eq == null ? null : eq.slot();
     }
 }

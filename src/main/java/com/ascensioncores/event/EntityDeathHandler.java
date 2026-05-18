@@ -1,5 +1,7 @@
 package com.ascensioncores.event;
 
+import com.ascensioncores.AscensionCoresConfig;
+import com.ascensioncores.compat.BetterVanillaMobsCompat;
 import com.ascensioncores.item.ModItems;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.minecraft.server.level.ServerLevel;
@@ -12,7 +14,11 @@ import net.minecraft.world.item.ItemStack;
 
 public final class EntityDeathHandler {
 
+    private static boolean registered;
+
     public static void register() {
+        if (registered) return;
+        registered = true;
         ServerLivingEntityEvents.AFTER_DEATH.register(EntityDeathHandler::onDeath);
     }
 
@@ -21,19 +27,31 @@ public final class EntityDeathHandler {
         if (!(entity.level() instanceof ServerLevel serverLevel)) return;
 
         int armorPieces = countArmorPieces(entity);
-        boolean hasWeapon = !entity.getItemBySlot(EquipmentSlot.MAINHAND).isEmpty();
+        int weapons = (entity.getItemBySlot(EquipmentSlot.MAINHAND).isEmpty() ? 0 : 1) + (entity.getItemBySlot(EquipmentSlot.OFFHAND).isEmpty() ? 0 : 1);
+        int gearPieces = armorPieces + weapons;
+        boolean betterVanillaMob = BetterVanillaMobsCompat.isEnhanced(entity);
 
-        if (armorPieces == 0 && !hasWeapon) return;
+        if (gearPieces == 0 && !betterVanillaMob) return;
 
         RandomSource rng = entity.level().getRandom();
 
-        float upgradeChance = armorPieces == 4 ? 0.20f : 0.15f;
-        if (rng.nextFloat() < upgradeChance) {
-            int count = 1 + rng.nextInt(4);
-            entity.spawnAtLocation(serverLevel, new ItemStack(ModItems.UPGRADE_CORE, count));
+        double upgradeChance = 0.0;
+        if (betterVanillaMob) {
+            // BVM mobs use their own rate exclusively (regular vs. Alpha resolved inside)
+            upgradeChance = BetterVanillaMobsCompat.getAscensionCoreDropChance(entity);
+        } else if (gearPieces > 0) {
+            upgradeChance = AscensionCoresConfig.mobAscensionCoreDropChancePerEquipment * gearPieces;
+        }
+        if (rng.nextDouble() < upgradeChance) {
+            int range = AscensionCoresConfig.mobAscensionCoreMaxDrop - AscensionCoresConfig.mobAscensionCoreMinDrop + 1;
+            int count = AscensionCoresConfig.mobAscensionCoreMinDrop + rng.nextInt(range);
+            entity.spawnAtLocation(serverLevel, new ItemStack(ModItems.ASCENSION_CORE, count));
         }
 
-        if (rng.nextFloat() < 0.01f) {
+        double chaosChance = betterVanillaMob
+            ? BetterVanillaMobsCompat.getChaosCoreDropChance(entity)
+            : AscensionCoresConfig.mobChaosCoreDropChance;
+        if (rng.nextDouble() < chaosChance) {
             entity.spawnAtLocation(serverLevel, new ItemStack(ModItems.CHAOS_CORE, 1));
         }
     }

@@ -1,0 +1,46 @@
+{
+  "criteria": {
+    "aaa": {
+      "trigger": "minecraft:player_hurt_entity",
+      "conditions": {
+        "player": [
+
+
+
+
+
+
+
+
+
+
+
+
+        ],
+        "entity": [
+          {
+
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "minecraft:spider",
+              "nbt": "{Tags:[fkbm.spider.mommy]}"
+            }
+          },
+          {
+            "condition": "minecraft:entity_scores",
+            "entity": "this",
+            "scores": {
+              "fkbm.cd3": {
+                "max": 0
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "function": "fkbm:systems/mobs/loop/skill/spider/aggro_babies_adv"
+  }
+}

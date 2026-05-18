@@ -1,0 +1,21 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "create"
+      ]
+    }
+  ],
+  "type":"create:cutting",
+  "ingredients":[
+    "minecraft:bread"
+  ],
+  "processingTime":30,
+  "results":[
+    {
+      "count": 4,
+      "id":"moredelight:bread_slice"
+    }
+  ]
+}

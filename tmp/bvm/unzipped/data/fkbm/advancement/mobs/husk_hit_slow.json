@@ -1,0 +1,32 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:entity_hurt_player",
+      "conditions": {
+        "player": [
+
+
+
+
+
+
+
+
+
+
+
+
+        ],
+        "damage": {
+          "source_entity": {
+            "type": "minecraft:husk",
+            "nbt": "{Tags:[\"fkbm.husk.hitslow\"]}"
+          }
+        }
+      }
+    }
+  },
+  "rewards": {
+    "function": "fkbm:systems/mobs/loop/skill/husk/hit_slow"
+  }
+}

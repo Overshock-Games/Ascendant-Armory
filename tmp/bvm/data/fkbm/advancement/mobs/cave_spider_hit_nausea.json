@@ -1,0 +1,32 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:entity_hurt_player",
+      "conditions": {
+        "player": [
+
+
+
+
+
+
+
+
+
+
+
+
+        ],
+        "damage": {
+          "source_entity": {
+            "type": "minecraft:cave_spider",
+            "nbt": "{Tags:[\"fkbm.cave_spider.nausea\"]}"
+          }
+        }
+      }
+    }
+  },
+  "rewards": {
+    "function": "fkbm:systems/mobs/loop/skill/cave_spider/nausea_bites"
+  }
+}

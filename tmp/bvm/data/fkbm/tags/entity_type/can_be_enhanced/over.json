@@ -1,0 +1,24 @@
+{
+  "values": [
+    "minecraft:bogged",
+    "minecraft:cave_spider",
+    "minecraft:creeper",
+    "minecraft:drowned",
+    "minecraft:enderman",
+    "minecraft:evoker",
+    "minecraft:husk",
+    "minecraft:illusioner",
+    "minecraft:pillager",
+    "minecraft:polar_bear",
+    "minecraft:skeleton",
+    "minecraft:slime",
+    "minecraft:spider",
+    "minecraft:stray",
+    "minecraft:vex",
+    "minecraft:vindicator",
+    "minecraft:witch",
+    "minecraft:wolf",
+    "minecraft:zombie",
+    "minecraft:zombie_villager"
+  ]
+}

@@ -14,11 +14,11 @@
     "main": [
       "com.ascensioncores.AscensionCommonMod"
     ],
-    "server": [
-      "com.ascensioncores.AscensionCoresMod"
-    ],
     "client": [
       "com.ascensioncores.AscensionClientMod"
+    ],
+    "jei_mod_plugin": [
+      "com.ascensioncores.compat.JeiPlugin"
     ]
   },
   "mixins": [
@@ -30,5 +30,11 @@
     "java": ">=25",
     "fabric-api": "*",
     "puffish_attributes": "*"
+  },
+  "suggests": {
+    "staminaattributes": "*",
+    "progression_reborn": "*",
+    "farmersdelight": "*",
+    "moredelight": "*"
   }
 }

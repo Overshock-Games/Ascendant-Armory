@@ -1,0 +1,2 @@
+execute unless entity @p[gamemode=!creative,gamemode=!spectator,distance=..32] run kill @s
+execute if entity @p[gamemode=!creative,gamemode=!spectator,distance=..1] run function fkbm:systems/mobs/loop/skill/piglin/trap_trigger

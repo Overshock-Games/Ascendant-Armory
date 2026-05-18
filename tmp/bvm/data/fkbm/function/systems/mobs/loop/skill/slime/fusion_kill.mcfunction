@@ -1,0 +1,1 @@
+execute as @e[type=minecraft:slime,tag=fkbm.slime.fusion.dead] at @s run tp ~ ~-200 ~

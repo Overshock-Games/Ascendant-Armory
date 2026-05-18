@@ -1,0 +1,22 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "expandeddelight"
+      ]
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "#c:bread_slice",
+    "#c:bread_slice",
+    "expandeddelight:peanut_butter",
+    "expandeddelight:sweet_berry_jelly"
+  ],
+  "result": {
+    "count": 1,
+    "id": "expandeddelight:sweet_berry_jelly_sandwich"
+  }
+}

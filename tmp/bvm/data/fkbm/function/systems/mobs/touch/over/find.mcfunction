@@ -1,0 +1,22 @@
+# mobs
+execute if entity @s[type=minecraft:zombie] run return run function fkbm:systems/mobs/touch/modify {mob:"zombie",dim:"over"}
+execute if entity @s[type=minecraft:skeleton] run return run function fkbm:systems/mobs/touch/modify {mob:"skeleton",dim:"over"}
+execute if entity @s[type=minecraft:spider] run return run function fkbm:systems/mobs/touch/modify {mob:"spider",dim:"over"}
+execute if entity @s[type=minecraft:creeper] run return run function fkbm:systems/mobs/touch/modify {mob:"creeper",dim:"over"}
+execute if entity @s[type=minecraft:drowned] run return run function fkbm:systems/mobs/touch/modify {mob:"drowned",dim:"over"}
+execute if entity @s[type=minecraft:wolf] run return run function fkbm:systems/mobs/touch/modify {mob:"wolf",dim:"over"}
+execute if entity @s[type=minecraft:enderman] run return run function fkbm:systems/mobs/touch/modify {mob:"enderman",dim:"end"}
+execute if entity @s[type=minecraft:zombie_villager] run return run function fkbm:systems/mobs/touch/modify {mob:"zombie",dim:"over"}
+execute if entity @s[type=minecraft:husk] run return run function fkbm:systems/mobs/touch/modify {mob:"husk",dim:"over"}
+execute if entity @s[type=minecraft:bogged] run return run function fkbm:systems/mobs/touch/modify {mob:"bogged",dim:"over"}
+execute if entity @s[type=minecraft:pillager] run return run function fkbm:systems/mobs/touch/modify {mob:"pillager",dim:"over"}
+execute if entity @s[type=minecraft:vindicator] run return run function fkbm:systems/mobs/touch/modify {mob:"vindicator",dim:"over"}
+execute if entity @s[type=minecraft:slime] run return run function fkbm:systems/mobs/touch/modify {mob:"slime",dim:"over"}
+execute if entity @s[type=minecraft:illusioner] run return run function fkbm:systems/mobs/touch/modify {mob:"illusioner",dim:"over"}
+execute if entity @s[type=minecraft:stray] run return run function fkbm:systems/mobs/touch/modify {mob:"stray",dim:"over"}
+execute if entity @s[type=minecraft:witch] run return run function fkbm:systems/mobs/touch/modify {mob:"witch",dim:"over"}
+execute if entity @s[type=minecraft:evoker] run return run function fkbm:systems/mobs/touch/modify {mob:"evoker",dim:"over"}
+execute if entity @s[type=minecraft:vex] run return run function fkbm:systems/mobs/touch/modify {mob:"vex",dim:"over"}
+execute if entity @s[type=minecraft:polar_bear] run return run function fkbm:systems/mobs/touch/modify {mob:"polar_bear",dim:"over"}
+execute if entity @s[type=minecraft:cave_spider] run return run function fkbm:systems/mobs/touch/modify {mob:"cave_spider",dim:"over"}
+execute if entity @s[type=minecraft:hoglin] run return run function fkbm:systems/mobs/touch/modify {mob:"hoglin",dim:"nether"}

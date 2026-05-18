@@ -1,0 +1,15 @@
+{
+  "values": [
+    "minecraft:air",
+    "minecraft:cave_air",
+    "minecraft:void_air",
+    "minecraft:netherrack",
+    "minecraft:warped_nylium",
+    "#minecraft:leaves",
+    "#minecraft:dirt",
+    "#minecraft:mineable/shovel",
+    "#minecraft:wooden_fences",
+    "#minecraft:wooden_doors",
+    "#minecraft:wool"
+  ]
+}

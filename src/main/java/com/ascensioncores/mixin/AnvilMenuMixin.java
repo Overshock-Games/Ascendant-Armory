@@ -1,76 +1,51 @@
 package com.ascensioncores.mixin;
 
+import com.ascensioncores.AscensionCoresConfig;
 import com.ascensioncores.gear.GearHelper;
 import com.ascensioncores.item.ModItems;
-import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.Container;
-import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.ResultContainer;
-import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Mixin(AnvilMenu.class)
 public abstract class AnvilMenuMixin {
 
-    private static final Logger AC_LOG = LoggerFactory.getLogger("ascensioncores/anvil");
-
     @Shadow private int repairItemCountCost;
     @Shadow @Final private DataSlot cost;
 
-    @Inject(method = "createResult", at = @At("TAIL"))
+    @Inject(method = "createResult", at = @At("RETURN"))
     private void interceptCreateResult(CallbackInfo ci) {
         ItemCombinerMenuAccessor acc = (ItemCombinerMenuAccessor) (Object) this;
         Container inputSlots = acc.getInputSlots();
         ResultContainer resultSlots = acc.getResultSlots();
 
-        AbstractContainerMenu self = (AbstractContainerMenu) (Object) this;
-        Slot s0 = self.slots.get(0);
-        Slot s1 = self.slots.get(1);
-        AC_LOG.info("  via slots: s0={} (idx {}, container={}), s1={} (idx {}, container={})",
-            s0.getItem().getItem(), s0.getContainerSlot(), s0.container.getClass().getSimpleName(),
-            s1.getItem().getItem(), s1.getContainerSlot(), s1.container.getClass().getSimpleName());
-        AC_LOG.info("  inputSlots size={}, class={}", inputSlots.getContainerSize(), inputSlots.getClass().getSimpleName());
-
-        ItemStack left  = s0.getItem();
-        ItemStack right = s1.getItem();
-
-        AC_LOG.info("createResult: left={} right={} isGear={} isUpgradeCore={} isChaosCore={}",
-            left.getItem(), right.getItem(),
-            !left.isEmpty() && GearHelper.isGear(left),
-            !right.isEmpty() && right.is(ModItems.UPGRADE_CORE),
-            !right.isEmpty() && right.is(ModItems.CHAOS_CORE));
+        ItemStack left  = inputSlots.getItem(0);
+        ItemStack right = inputSlots.getItem(1);
 
         if (left.isEmpty() || right.isEmpty()) return;
-        if (!GearHelper.isGear(left)) {
-            AC_LOG.info("  -> left not gear (weapon={}, armor={}, tool={})",
-                GearHelper.isWeapon(left), GearHelper.isArmor(left), GearHelper.isTool(left));
-            return;
-        }
+        if (!GearHelper.isGear(left)) return;
 
         int currentLevel = GearHelper.getLevel(left);
-        AC_LOG.info("  -> matched gear, currentLevel={}", currentLevel);
 
         // ── A: Upgrade with cores ──────────────────────────────────────────
-        if (right.is(ModItems.UPGRADE_CORE)) {
-            if (currentLevel >= 4) {
-                AC_LOG.info("  -> max level, no result");
+        if (right.is(ModItems.ASCENSION_CORE)) {
+            if (currentLevel >= GearHelper.getMaxLevel()) {
                 resultSlots.setItem(0, ItemStack.EMPTY);
                 return;
             }
-            int coreCost = (int) Math.pow(4, currentLevel);
+            int coreCost = GearHelper.getAscensionCoreCost(currentLevel);
             if (right.getCount() < coreCost) {
-                AC_LOG.info("  -> not enough cores: need {} have {}", coreCost, right.getCount());
                 resultSlots.setItem(0, ItemStack.EMPTY);
                 return;
             }
@@ -78,8 +53,7 @@ public abstract class AnvilMenuMixin {
             GearHelper.levelUp(result);
             resultSlots.setItem(0, result);
             repairItemCountCost = coreCost;
-            cost.set(Math.max(1, currentLevel));
-            AC_LOG.info("  -> SET RESULT, coreCost={}, xpCost={}", coreCost, Math.max(1, currentLevel));
+            cost.set(ascensioncores$upgradeXpCost(currentLevel));
             return;
         }
 
@@ -87,13 +61,19 @@ public abstract class AnvilMenuMixin {
         if (right.is(ModItems.CHAOS_CORE)) {
             if (currentLevel == 0) {
                 resultSlots.setItem(0, ItemStack.EMPTY);
+                Player player = ((ItemCombinerMenuAccessor) (Object) this).getPlayer();
+                if (player != null && AscensionCoresConfig.playAnvilFeedback) {
+                    player.sendOverlayMessage(
+                        Component.literal("Chaos cores need leveled gear (L1+).")
+                            .withStyle(net.minecraft.ChatFormatting.RED));
+                }
                 return;
             }
             ItemStack result = left.copy();
-            GearHelper.reroll(result);
+            GearHelper.rerollDeterministic(result);
             resultSlots.setItem(0, result);
             repairItemCountCost = 1;
-            cost.set(currentLevel);
+            cost.set(ascensioncores$rerollXpCost(currentLevel));
             return;
         }
 
@@ -102,11 +82,53 @@ public abstract class AnvilMenuMixin {
         if (currentResult.isEmpty()) return;
         if (!GearHelper.hasAscensionData(left)) return;
 
-        int maxEnchants = Math.max(0, currentLevel - 1);
-        ItemEnchantments enchants = currentResult.getOrDefault(
-            DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
-        if (enchants.size() > maxEnchants) {
+        int maxEnchants = currentLevel;
+        if (GearHelper.countNonCurseEnchantments(currentResult) > maxEnchants) {
             resultSlots.setItem(0, ItemStack.EMPTY);
         }
+    }
+
+    @Inject(method = "onTake", at = @At("HEAD"))
+    private void applyAscensionAnvilResult(Player player, ItemStack stack, CallbackInfo ci) {
+        ItemCombinerMenuAccessor acc = (ItemCombinerMenuAccessor) (Object) this;
+        Container inputSlots = acc.getInputSlots();
+
+        ItemStack left = inputSlots.getItem(0);
+        ItemStack right = inputSlots.getItem(1);
+
+        if (stack.isEmpty() || left.isEmpty() || right.isEmpty()) return;
+
+        if (right.is(ModItems.ASCENSION_CORE) && GearHelper.isGear(left)) {
+            playFeedback(player, "Level " + GearHelper.getLevel(stack), GearHelper.getLevel(stack));
+            return;
+        }
+
+        if (right.is(ModItems.CHAOS_CORE)) {
+            if (!GearHelper.isGear(left) || GearHelper.getLevel(left) == 0) return;
+            playFeedback(player, "Stats rerolled", GearHelper.getLevel(stack));
+        }
+    }
+
+
+    @org.spongepowered.asm.mixin.Unique
+    private static int ascensioncores$upgradeXpCost(int currentLevel) {
+        return AscensionCoresConfig.getUpgradeXpCost(currentLevel);
+    }
+
+    @org.spongepowered.asm.mixin.Unique
+    private static int ascensioncores$rerollXpCost(int currentLevel) {
+        return currentLevel;
+    }
+
+    private static void playFeedback(Player player, String message, int level) {
+        if (!AscensionCoresConfig.playAnvilFeedback) return;
+        switch (level) {
+            case 1 -> player.playSound(SoundEvents.AMETHYST_BLOCK_CHIME, 0.6f, 1.4f);
+            case 2 -> player.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 0.6f, 1.2f);
+            case 3 -> player.playSound(SoundEvents.RESPAWN_ANCHOR_CHARGE, 0.6f, 1.0f);
+            case 4 -> player.playSound(SoundEvents.ENDER_DRAGON_GROWL, 0.4f, 1.5f);
+            default -> player.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 0.6f, 1.2f);
+        }
+        player.sendOverlayMessage(Component.literal(message));
     }
 }

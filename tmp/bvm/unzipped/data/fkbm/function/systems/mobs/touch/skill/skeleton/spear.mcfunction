@@ -1,0 +1,3 @@
+execute if score #IndividualDiff fkbm.options matches 1 run return run item replace entity @s weapon.mainhand with minecraft:wooden_spear[damage=37,custom_name={"italic":false,"text":"Wooden Fork"},item_name={"italic":false,"text":"Wooden Fork"}]
+execute if score #IndividualDiff fkbm.options matches 2 run return run item replace entity @s weapon.mainhand with minecraft:stone_spear[damage=108,custom_name={"italic":false,"text":"Stone Fork"},item_name={"italic":false,"text":"Stone Fork"}]
+execute if score #IndividualDiff fkbm.options matches 3 run return run item replace entity @s weapon.mainhand with minecraft:iron_spear[damage=228,custom_name={"italic":false,"text":"Iron Fork"},item_name={"italic":false,"text":"Iron Fork"}]

@@ -1,0 +1,17 @@
+execute if score MCDP fkbm.compat matches 1 run function fkbm:compatibility/mcdp/pre_secure
+execute if score Advanced_Mobs fkbm.compat matches 1 run function fkbm:compatibility/advanced_mobs/pre_secure
+execute if score Beasts_and_Monsters fkbm.compat matches 1 run function fkbm:compatibility/beasts_and_monsters/pre_secure
+execute if score Better_Nether_Mobs fkbm.compat matches 1 run function fkbm:compatibility/better_nether_mobs/pre_secure
+execute if score Mo_Variants fkbm.compat matches 1 run function fkbm:compatibility/mo_variants/pre_secure
+execute if score Mob_Captains fkbm.compat matches 1 run function fkbm:compatibility/mob_captains/pre_secure
+execute if score Mob_Variants fkbm.compat matches 1 run function fkbm:compatibility/mob_variants/pre_secure
+execute if score Infinity_Cave fkbm.compat matches 1 run function fkbm:compatibility/infinity_cave/pre_secure
+execute if score Dungeons_and_Taverns fkbm.compat matches 1 run function fkbm:compatibility/dungeons_and_taverns/pre_secure
+execute if score Dungeon_Now_Loading fkbm.compat matches 1 run function fkbm:compatibility/dungeon_now_loading/pre_secure
+execute if score RPG_Loot fkbm.compat matches 1 run function fkbm:compatibility/rpg_loot/pre_secure
+execute if score Special_Mobs fkbm.compat matches 1 run function fkbm:compatibility/special_mobs/pre_secure
+execute if score True_Survival fkbm.compat matches 1 run function fkbm:compatibility/true_survival/pre_secure
+execute if score Upgraded_Mobs fkbm.compat matches 1 run function fkbm:compatibility/upgraded_mobs/pre_secure
+execute if score Vanilla_Mob_Bosses_Variants fkbm.compat matches 1 run function fkbm:compatibility/vanilla_mob_bosses_variants/pre_secure
+execute if score Wasd_Moar_Bosses fkbm.compat matches 1 run function fkbm:compatibility/wasd_moar_bosses/pre_secure
+execute if score Wasd_Random_Bosses fkbm.compat matches 1 run function fkbm:compatibility/wasd_random_bosses/pre_secure

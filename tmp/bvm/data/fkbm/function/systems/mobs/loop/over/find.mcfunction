@@ -1,0 +1,22 @@
+# mobs
+execute if entity @s[type=minecraft:bogged] run return run function fkbm:systems/mobs/loop/over/bogged
+execute if entity @s[type=minecraft:cave_spider] run return run function fkbm:systems/mobs/loop/over/cave_spider
+execute if entity @s[type=minecraft:creeper] run return run function fkbm:systems/mobs/loop/over/creeper
+execute if entity @s[type=minecraft:drowned] run return run function fkbm:systems/mobs/loop/over/drowned
+execute if entity @s[type=minecraft:enderman] run return run function fkbm:systems/mobs/loop/end/enderman
+execute if entity @s[type=minecraft:evoker] run return run function fkbm:systems/mobs/loop/over/evoker
+execute if entity @s[type=minecraft:hoglin] run return run function fkbm:systems/mobs/loop/nether/hoglin
+execute if entity @s[type=minecraft:husk] run return run function fkbm:systems/mobs/loop/over/husk
+execute if entity @s[type=minecraft:illusioner] run return run function fkbm:systems/mobs/loop/over/illusioner
+execute if entity @s[type=minecraft:pillager] run return run function fkbm:systems/mobs/loop/over/pillager
+execute if entity @s[type=minecraft:polar_bear] run return run function fkbm:systems/mobs/loop/over/polar_bear
+execute if entity @s[type=minecraft:skeleton] run return run function fkbm:systems/mobs/loop/over/skeleton
+execute if entity @s[type=minecraft:slime] run return run function fkbm:systems/mobs/loop/over/slime
+execute if entity @s[type=minecraft:spider] run return run function fkbm:systems/mobs/loop/over/spider
+execute if entity @s[type=minecraft:stray] run return run function fkbm:systems/mobs/loop/over/stray
+execute if entity @s[type=minecraft:vex] run return run function fkbm:systems/mobs/loop/over/vex
+execute if entity @s[type=minecraft:vindicator] run return run function fkbm:systems/mobs/loop/over/vindicator
+execute if entity @s[type=minecraft:witch] run return run function fkbm:systems/mobs/loop/over/witch
+execute if entity @s[type=minecraft:wolf] run return run function fkbm:systems/mobs/loop/over/wolf
+execute if entity @s[type=minecraft:zombie] run return run function fkbm:systems/mobs/loop/over/zombie
+execute if entity @s[type=minecraft:zombie_villager] run return run function fkbm:systems/mobs/loop/over/zombie

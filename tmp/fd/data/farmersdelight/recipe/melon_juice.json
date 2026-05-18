@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:melon_slice",
+    "minecraft:melon_slice",
+    "minecraft:sugar",
+    "minecraft:melon_slice",
+    "minecraft:melon_slice",
+    "minecraft:glass_bottle"
+  ],
+  "result": {
+    "id": "farmersdelight:melon_juice"
+  }
+}
