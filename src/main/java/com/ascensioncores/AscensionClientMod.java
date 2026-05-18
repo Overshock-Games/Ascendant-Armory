@@ -1,5 +1,6 @@
 package com.ascensioncores;
 
+import com.ascensioncores.event.AscensionParticleHandler;
 import com.ascensioncores.event.ItemLevelOverlayHandler;
 import com.ascensioncores.event.TooltipHandler;
 import net.fabricmc.api.ClientModInitializer;
@@ -10,5 +11,6 @@ public final class AscensionClientMod implements ClientModInitializer {
     public void onInitializeClient() {
         TooltipHandler.register();
         ItemLevelOverlayHandler.register();
+        AscensionParticleHandler.register();
     }
 }
