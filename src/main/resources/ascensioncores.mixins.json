@@ -10,8 +10,7 @@
     "LivingEntityDamageMixin",
     "LootTableMixin",
     "ProjectileDamageMixin",
-    "LivingEntityEffectMixin",
-    "SmithingMenuMixin"
+    "LivingEntityEffectMixin"
   ],
   "client": [
     "AbstractContainerScreenAccessor"

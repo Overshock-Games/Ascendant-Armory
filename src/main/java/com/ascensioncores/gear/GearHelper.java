@@ -6,14 +6,7 @@ import com.ascensioncores.compat.FarmersDelightCompat;
 import com.ascensioncores.compat.MoreDelightCompat;
 import com.ascensioncores.compat.ProgressionRebornCompat;
 import com.ascensioncores.component.ModComponents;
-import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.world.item.equipment.trim.ArmorTrim;
-import net.minecraft.world.item.equipment.trim.TrimMaterial;
-import net.minecraft.world.item.equipment.trim.TrimPattern;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -423,36 +416,6 @@ public final class GearHelper {
         if (isWeapon(stack)) return StatPool.WEAPON_POOL;
         if (isArmor(stack))  return StatPool.ARMOR_POOL;
         return StatPool.TOOL_POOL;
-    }
-
-    // ── Trim ────────────────────────────────────────────────────────────────
-
-    public static void applyTrim(ItemStack stack, RegistryAccess registryAccess) {
-        if (!AscensionCoresConfig.enableAscensionTrims) return;
-        if (!isArmor(stack)) return;
-
-        int level = getLevel(stack);
-        if (level == 0) {
-            stack.remove(DataComponents.TRIM);
-            return;
-        }
-
-        List<RolledStat> stats = getRolledStats(stack);
-        if (stats.isEmpty()) return;
-
-        try {
-            Registry<TrimPattern> patternReg = registryAccess.lookupOrThrow(Registries.TRIM_PATTERN);
-            Registry<TrimMaterial> materialReg = registryAccess.lookupOrThrow(Registries.TRIM_MATERIAL);
-
-            Optional<Holder.Reference<TrimPattern>> pattern = patternReg.get(
-                Identifier.fromNamespaceAndPath("ascensioncores", stats.get(0).id()));
-            Optional<Holder.Reference<TrimMaterial>> material = materialReg.get(
-                Identifier.fromNamespaceAndPath("ascensioncores", "level_" + level));
-
-            if (pattern.isEmpty() || material.isEmpty()) return;
-
-            stack.set(DataComponents.TRIM, new ArmorTrim(material.get(), pattern.get()));
-        } catch (Exception ignored) {}
     }
 
     public static double getScaledStatAmount(ItemStack stack, String statId) {
