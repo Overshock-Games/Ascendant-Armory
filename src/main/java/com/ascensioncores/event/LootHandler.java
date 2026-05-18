@@ -71,20 +71,13 @@ public final class LootHandler {
             }
 
             if (key.equals(BuiltInLootTables.BASTION_TREASURE)
-             || key.equals(BuiltInLootTables.END_CITY_TREASURE)) {
+             || key.equals(BuiltInLootTables.END_CITY_TREASURE)
+             || key.equals(BuiltInLootTables.ANCIENT_CITY)) {
                 tableBuilder.apply(AscensionAutoLevelFunction.treasureLoot());
                 addAscensionCorePool(tableBuilder, "treasureAscensionCoreChance",
-                    AscensionCoresConfig.mobAscensionCoreMinDrop,
-                    AscensionCoresConfig.mobAscensionCoreMaxDrop);
+                    AscensionCoresConfig.treasureAscensionCoreMinDrop,
+                    AscensionCoresConfig.treasureAscensionCoreMaxDrop);
                 addChaosCorePool(tableBuilder, "treasureChaosCoreChance");
-            }
-
-            if (key.equals(BuiltInLootTables.ANCIENT_CITY)) {
-                tableBuilder.apply(AscensionAutoLevelFunction.treasureLoot());
-                addAscensionCorePool(tableBuilder, "ancientCityAscensionCoreChance",
-                    AscensionCoresConfig.mobAscensionCoreMinDrop,
-                    AscensionCoresConfig.mobAscensionCoreMaxDrop);
-                addChaosCorePool(tableBuilder, "ancientCityChaosCoreChance");
             }
         });
     }
