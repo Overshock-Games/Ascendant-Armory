@@ -26,8 +26,7 @@ public abstract class LootTableMixin {
             if (stack.isEmpty() || !GearHelper.isGear(stack)) continue;
             if (GearHelper.hasAscensionData(stack)) continue;
 
-            int maxPossible = Math.min(GearHelper.getMaxLevel(), GearHelper.getMaterialCapacity(stack));
-            if (maxPossible <= 0) continue;
+            int maxPossible = GearHelper.getMaxLevel();
 
             double chance = AscensionCoresConfig.randomLootAscensionChance;
             if (chance > 0 && Math.random() < chance) {

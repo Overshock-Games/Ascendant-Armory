@@ -47,8 +47,7 @@ public final class AscensionAutoLevelFunction extends LootItemConditionalFunctio
             return stack;
         }
 
-        int maxPossible = Math.min(GearHelper.getMaxLevel(), GearHelper.getMaterialCapacity(stack));
-        if (maxPossible <= 0) return stack;
+        int maxPossible = GearHelper.getMaxLevel();
 
         double chance = treasure ? AscensionCoresConfig.treasureRandomLootAscensionChance : AscensionCoresConfig.randomLootAscensionChance;
         if (chance > 0 && context.getRandom().nextFloat() < chance) {
