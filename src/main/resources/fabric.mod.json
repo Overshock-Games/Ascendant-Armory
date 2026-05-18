@@ -32,6 +32,7 @@
     "puffish_attributes": "*"
   },
   "suggests": {
+    "jei": "*",
     "progression_reborn": "*",
     "farmersdelight": "*",
     "moredelight": "*",

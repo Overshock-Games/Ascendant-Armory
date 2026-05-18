@@ -109,10 +109,20 @@ public final class TooltipHandler {
 
     private static int statColor(String id) {
         return switch (id) {
-            case "venom"     -> 0x55FF55;
-            case "frostbite" -> 0x55FFFF;
-            case "shock"     -> 0xFFFF55;
-            default          -> 0x2BBBCC;
+            case "venom"            -> 0x55FF55;
+            case "frostbite"        -> 0x55FFFF;
+            case "shock"            -> 0xFFFF55;
+            case "wither"           -> 0x7F00FF;
+            case "grievous"         -> 0xCC2200;
+            case "momentum"         -> 0xFF8C00;
+            case "duelist_damage"   -> 0xFFD700;
+            case "pinning"          -> 0x4488FF;
+            case "overcharge_damage"-> 0xFFEE00;
+            case "retaliation"      -> 0xFF3300;
+            case "second_wind"      -> 0xFF88BB;
+            case "bulwark"          -> 0xAAAAAA;
+            case "vigor"            -> 0xFF2244;
+            default                 -> 0x2BBBCC;
         };
     }
 

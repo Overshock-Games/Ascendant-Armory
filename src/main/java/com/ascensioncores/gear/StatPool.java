@@ -7,6 +7,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.puffish.attributesmod.api.PuffishAttributes;
 
 import java.text.DecimalFormat;
+import com.ascensioncores.AscensionCoresConfig;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -56,10 +58,15 @@ public final class StatPool {
     private static final DecimalFormat COMPACT_DECIMAL = new DecimalFormat("0.##");
 
     public static void refresh() {
-        WEAPON_POOL = createWeaponPool();
-        RANGED_WEAPON_POOL = createRangedWeaponPool();
-        ARMOR_POOL = createArmorPool();
-        TOOL_POOL = createToolPool();
+        WEAPON_POOL       = filter(createWeaponPool(),       AscensionCoresConfig.disabledWeaponTraits);
+        RANGED_WEAPON_POOL= filter(createRangedWeaponPool(), AscensionCoresConfig.disabledRangedTraits);
+        ARMOR_POOL        = filter(createArmorPool(),        AscensionCoresConfig.disabledArmorTraits);
+        TOOL_POOL         = filter(createToolPool(),         AscensionCoresConfig.disabledToolTraits);
+    }
+
+    private static List<StatDef> filter(List<StatDef> pool, Set<String> disabled) {
+        if (disabled.isEmpty()) return pool;
+        return pool.stream().filter(d -> !disabled.contains(d.id())).toList();
     }
 
     private static List<StatDef> createWeaponPool() {
@@ -79,7 +86,11 @@ public final class StatPool {
             new StatDef("sprinting_speed",      PuffishAttributes.SPRINTING_SPEED,      0.03, 0.10, "Sprint Speed",         "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
             new StatDef("stealth",              PuffishAttributes.STEALTH,              0.50, 2.00, "Stealth",              " blk"),
             new StatDef("jump",                 PuffishAttributes.JUMP,                 0.05, 0.20, "Jump Height",          "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
-            new StatDef("repair_cost",          PuffishAttributes.REPAIR_COST,         -0.15,-0.05, "Repair Cost",          "%")
+            new StatDef("repair_cost",          PuffishAttributes.REPAIR_COST,         -0.15,-0.05, "Repair Cost",          "%"),
+            new StatDef("duelist_damage",       null,                                   0.05, 0.10, "Duelist",              "%"),
+            new StatDef("wither",               null,                                   0.04, 0.12, "Wither",               "%"),
+            new StatDef("momentum",             null,                                   0.03, 0.08, "Momentum",             "%"),
+            new StatDef("grievous",             null,                                   0.05, 0.15, "Grievous",             "%")
         ));
         return List.copyOf(pool);
     }
@@ -101,7 +112,12 @@ public final class StatPool {
             new StatDef("sprinting_speed",      PuffishAttributes.SPRINTING_SPEED,      0.03, 0.10, "Sprint Speed",         "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
             new StatDef("stealth",              PuffishAttributes.STEALTH,              0.50, 2.00, "Stealth",              " blk"),
             new StatDef("jump",                 PuffishAttributes.JUMP,                 0.05, 0.20, "Jump Height",          "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
-            new StatDef("repair_cost",          PuffishAttributes.REPAIR_COST,         -0.15,-0.05, "Repair Cost",          "%")
+            new StatDef("repair_cost",          PuffishAttributes.REPAIR_COST,         -0.15,-0.05, "Repair Cost",          "%"),
+            new StatDef("duelist_damage",       null,                                   0.05, 0.10, "Duelist",              "%"),
+            new StatDef("wither",               null,                                   0.04, 0.12, "Wither",               "%"),
+            new StatDef("grievous",             null,                                   0.05, 0.15, "Grievous",             "%"),
+            new StatDef("pinning",              null,                                   0.05, 0.15, "Pinning",              "%"),
+            new StatDef("overcharge_damage",    null,                                   0.08, 0.20, "Overcharge",           "%")
         ));
         return List.copyOf(pool);
     }
@@ -122,7 +138,11 @@ public final class StatPool {
             new StatDef("tamed_resistance",     PuffishAttributes.TAMED_RESISTANCE,     0.50, 2.00, "Tamed Resist.",        " DMG"),
             new StatDef("stamina",              PuffishAttributes.STAMINA,              0.50, 2.00, "Stamina",              " pts"),
             new StatDef("experience",           PuffishAttributes.EXPERIENCE,           0.05, 0.20, "XP Bonus",             "%"),
-            new StatDef("jump",                 PuffishAttributes.JUMP,                 0.05, 0.20, "Jump Height",          "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE)
+            new StatDef("jump",                 PuffishAttributes.JUMP,                 0.05, 0.20, "Jump Height",          "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
+            new StatDef("retaliation",          null,                                   0.05, 0.20, "Retaliation",          "%"),
+            new StatDef("second_wind",          null,                                   0.05, 0.15, "Second Wind",          "%"),
+            new StatDef("bulwark",              null,                                   0.05, 0.15, "Bulwark",              "%"),
+            new StatDef("vigor",                Attributes.MAX_HEALTH,                  0.50, 1.50, "Vigor",                " HP")
         ));
         return List.copyOf(pool);
     }

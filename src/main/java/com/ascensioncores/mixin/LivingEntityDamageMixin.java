@@ -1,16 +1,24 @@
 package com.ascensioncores.mixin;
 
 import com.ascensioncores.gear.GearHelper;
+import com.ascensioncores.gear.TraitState;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityDamageMixin {
+
+    @Unique
+    private static boolean ascensioncores$retaliating = false;
 
     @ModifyVariable(method = "hurtServer", at = @At("HEAD"), argsOnly = true, ordinal = 0)
     private float ascensioncores$applyCustomArmorStats(float amount, ServerLevel level, DamageSource source) {
@@ -45,6 +53,37 @@ public abstract class LivingEntityDamageMixin {
             amount *= (float) (1.0 - Math.min(steadyGuard, 0.50));
         }
 
+        double bulwark = GearHelper.getScaledArmorStatAmount(entity, "bulwark");
+        if (bulwark > 0.0 && entity.getDeltaMovement().horizontalDistanceSqr() < 0.001) {
+            amount *= (float) (1.0 - Math.min(bulwark, 0.50));
+        }
+
+        if (!ascensioncores$retaliating && !(source.getDirectEntity() instanceof Projectile)
+                && source.getEntity() instanceof LivingEntity attacker && attacker != entity) {
+            double retaliation = GearHelper.getScaledArmorStatAmount(entity, "retaliation");
+            if (retaliation > 0.0) {
+                float retDamage = amount * (float) Math.min(retaliation, 0.50);
+                ascensioncores$retaliating = true;
+                attacker.hurtServer(level, level.damageSources().thorns(entity), retDamage);
+                ascensioncores$retaliating = false;
+            }
+        }
+
         return amount;
+    }
+
+    @Inject(method = "hurtServer", at = @At("RETURN"))
+    private void ascensioncores$checkSecondWind(ServerLevel level, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        if (!cir.getReturnValueZ()) return;
+        LivingEntity entity = (LivingEntity) (Object) this;
+        if (entity.getHealth() <= 0) return;
+        double secondWind = GearHelper.getScaledArmorStatAmount(entity, "second_wind");
+        if (secondWind <= 0.0) return;
+        if (entity.getHealth() / entity.getMaxHealth() <= 0.30f) {
+            if (TraitState.trySecondWind(entity.getUUID(), 30_000L)) {
+                entity.heal((float) (secondWind * entity.getMaxHealth()));
+                level.sendParticles(ParticleTypes.HEART, entity.getX(), entity.getY() + 1.0, entity.getZ(), 5, 0.3, 0.3, 0.3, 0.05);
+            }
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.ascensioncores.mixin;
 
 import com.ascensioncores.gear.GearHelper;
+import com.ascensioncores.gear.TraitState;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,5 +27,14 @@ public abstract class LivingEntityEffectMixin {
             );
         }
         return effect;
+    }
+
+    @ModifyVariable(method = "heal", at = @At("HEAD"), argsOnly = true)
+    private float ascensioncores$applyGrievousWound(float amount) {
+        LivingEntity entity = (LivingEntity) (Object) this;
+        if (TraitState.hasGrievousWound(entity.getUUID())) {
+            return amount * 0.5f;
+        }
+        return amount;
     }
 }

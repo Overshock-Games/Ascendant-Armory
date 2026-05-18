@@ -32,6 +32,13 @@ dependencies {
 
     compileOnly "mezz.jei:jei-26.1.2-fabric-api:29.5.0.26"
     runtimeOnly "mezz.jei:jei-26.1.2-fabric:29.5.0.26"
+
+    testImplementation "org.junit.jupiter:junit-jupiter:5.10.0"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+test {
+    useJUnitPlatform()
 }
 
 java {

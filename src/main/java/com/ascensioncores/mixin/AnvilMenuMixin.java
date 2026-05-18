@@ -1,8 +1,14 @@
 package com.ascensioncores.mixin;
 
 import com.ascensioncores.AscensionCoresConfig;
+import com.ascensioncores.component.ModComponents;
 import com.ascensioncores.gear.GearHelper;
+import com.ascensioncores.gear.RolledStat;
 import com.ascensioncores.item.ModItems;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.Container;
@@ -78,7 +84,35 @@ public abstract class AnvilMenuMixin {
             return;
         }
 
-        // ── C: Enchanted book — enforce enchantment capacity ──────────────
+        // ── C: Trait donation — same item type, both ascension gear ──────────
+        if (GearHelper.isGear(right) && left.getItem() == right.getItem()) {
+            List<RolledStat> leftStats = GearHelper.getRolledStats(left);
+            List<RolledStat> rightStats = GearHelper.getRolledStats(right);
+            int capacity = Math.min(GearHelper.getMaterialCapacity(left), GearHelper.getMaxLevel());
+
+            if (!rightStats.isEmpty() && leftStats.size() < capacity) {
+                Set<String> leftIds = leftStats.stream()
+                    .map(RolledStat::id).collect(Collectors.toSet());
+                RolledStat donated = rightStats.stream()
+                    .filter(s -> !leftIds.contains(s.id()))
+                    .findFirst().orElse(null);
+
+                if (donated != null) {
+                    ItemStack result = left.copy();
+                    List<RolledStat> newStats = new ArrayList<>(leftStats);
+                    newStats.add(donated);
+                    result.set(ModComponents.ROLLED_STATS, newStats);
+                    GearHelper.rebuildAttributes(result, GearHelper.getLevel(result), newStats);
+                    resultSlots.setItem(0, result);
+                    cost.set(Math.max(1, GearHelper.getLevel(right)));
+                    return;
+                }
+            }
+            resultSlots.setItem(0, ItemStack.EMPTY);
+            return;
+        }
+
+        // ── D: Enchanted book — enforce enchantment capacity ──────────────
         ItemStack currentResult = resultSlots.getItem(0);
         if (currentResult.isEmpty()) return;
         if (!GearHelper.hasAscensionData(left)) return;

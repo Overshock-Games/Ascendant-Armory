@@ -9,7 +9,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -228,6 +227,29 @@ public final class AscensionCoresConfig {
                 randomLootAscensionChance=%.4f
                 treasureRandomLootAscensionChance=%.4f
 
+                # ── Trait pools ───────────────────────────────────────────────
+                # Comma-separated list of trait IDs to exclude from rolling, per pool.
+                # Leave blank to allow all. Example: disabledWeaponTraits=shock,venom
+                #
+                # Weapon traits:  life_steal, reach, attack_speed, armor_shred, toughness_shred,
+                #   experience, critical_damage, execute_damage, ambush_damage, frostbite, venom,
+                #   shock, sprinting_speed, stealth, jump, repair_cost,
+                #   duelist_damage, wither, momentum, grievous
+                # Ranged traits:  life_steal, armor_shred, toughness_shred, experience,
+                #   critical_damage, execute_damage, ambush_damage, frostbite, venom, shock,
+                #   sprinting_speed, stealth, jump, repair_cost,
+                #   duelist_damage, wither, grievous, pinning, overcharge_damage
+                # Armor traits:   evasion, deflection, tenacity, melee_resistance,
+                #   natural_regeneration, last_stand_guard, steady_guard, sprinting_speed,
+                #   consuming_speed, repair_cost, stealth, tamed_resistance, stamina, experience, jump,
+                #   retaliation, second_wind, bulwark, vigor
+                # Tool traits:    experience, repair_cost, consuming_speed, jump,
+                #   natural_regeneration, stamina, stealth, sprinting_speed
+                disabledWeaponTraits=%s
+                disabledRangedTraits=%s
+                disabledArmorTraits=%s
+                disabledToolTraits=%s
+
                 # ── Compatibility ─────────────────────────────────────────────────
                 # If true, BetterVanillaMobs "touched" mobs get the special
                 # rarity-scaled drop rates below instead of the generic mob rates.
@@ -272,6 +294,10 @@ public final class AscensionCoresConfig {
                     treasureChaosCoreChance,
                     randomLootAscensionChance,
                     treasureRandomLootAscensionChance,
+                    setToString(disabledWeaponTraits),
+                    setToString(disabledRangedTraits),
+                    setToString(disabledArmorTraits),
+                    setToString(disabledToolTraits),
                     enableBetterVanillaMobsIntegration,
                     betterVanillaMobsAscensionCoreDropChance,
                     betterVanillaMobsAscensionCoreDropChancePerStar,
@@ -304,6 +330,10 @@ public final class AscensionCoresConfig {
             logger.warn("[AscensionCores] '{}' is not a valid integer ('{}'), using default {}", key, raw, def);
             return def;
         }
+    }
+
+    private static String setToString(Set<String> set) {
+        return String.join(",", set);
     }
 
     static Set<String> parseStringSet(Properties props, String key, Logger logger) {

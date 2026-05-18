@@ -1,6 +1,7 @@
 package com.ascensioncores.mixin;
 
 import com.ascensioncores.gear.GearHelper;
+import com.ascensioncores.gear.TraitState;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -67,6 +68,18 @@ public abstract class PlayerAttackMixin {
                 amount *= (float) (1.0 + executeBonus);
             }
 
+            double duelistBonus = GearHelper.getScaledStatAmount(weapon, "duelist_damage");
+            if (duelistBonus > 0.0 && livingTarget.getHealth() >= livingTarget.getMaxHealth() * 0.99f) {
+                amount *= (float) (1.0 + duelistBonus);
+            }
+
+            int momentumHits = TraitState.getMomentumHits(player.getUUID(), livingTarget.getUUID());
+            TraitState.recordHit(player.getUUID(), livingTarget.getUUID());
+            double momentumBonus = GearHelper.getScaledStatAmount(weapon, "momentum");
+            if (momentumBonus > 0.0 && momentumHits > 0) {
+                amount *= (float) (1.0 + momentumBonus * Math.min(momentumHits, 5));
+            }
+
             double frostbite = GearHelper.getScaledStatAmount(weapon, "frostbite")
                 + GearHelper.getScaledEquippedArtifactStatAmount(player, "frostbite");
             if (frostbite > 0.0 && Math.random() < frostbite) {
@@ -83,6 +96,18 @@ public abstract class PlayerAttackMixin {
                 + GearHelper.getScaledEquippedArtifactStatAmount(player, "shock");
             if (shock > 0.0 && Math.random() < shock) {
                 livingTarget.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.WEAKNESS, 60, 0));
+            }
+
+            double wither = GearHelper.getScaledStatAmount(weapon, "wither")
+                + GearHelper.getScaledEquippedArtifactStatAmount(player, "wither");
+            if (wither > 0.0 && Math.random() < wither) {
+                livingTarget.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.WITHER, 80, 0));
+            }
+
+            double grievous = GearHelper.getScaledStatAmount(weapon, "grievous")
+                + GearHelper.getScaledEquippedArtifactStatAmount(player, "grievous");
+            if (grievous > 0.0 && Math.random() < grievous) {
+                TraitState.applyGrievousWound(livingTarget.getUUID(), 4000L);
             }
         }
 

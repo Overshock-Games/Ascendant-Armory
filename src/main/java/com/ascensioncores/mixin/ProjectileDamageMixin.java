@@ -1,6 +1,7 @@
 package com.ascensioncores.mixin;
 
 import com.ascensioncores.gear.GearHelper;
+import com.ascensioncores.gear.TraitState;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -52,9 +53,29 @@ public abstract class ProjectileDamageMixin {
             amount *= (float) (1.0 + executeBonus);
         }
 
+        double duelistBonus = GearHelper.getScaledStatAmount(weapon, "duelist_damage")
+            + GearHelper.getScaledEquippedArtifactStatAmount(player, "duelist_damage");
+        if (duelistBonus > 0.0 && target.getHealth() >= target.getMaxHealth() * 0.99f) {
+            amount *= (float) (1.0 + duelistBonus);
+        }
+
+        if (directEntity instanceof Arrow arrow && arrow.isCritArrow()) {
+            double overcharge = GearHelper.getScaledStatAmount(weapon, "overcharge_damage")
+                + GearHelper.getScaledEquippedArtifactStatAmount(player, "overcharge_damage");
+            if (overcharge > 0.0) {
+                amount *= (float) (1.0 + overcharge);
+            }
+        }
+
         double frostbite = GearHelper.getScaledStatAmount(weapon, "frostbite") + GearHelper.getScaledEquippedArtifactStatAmount(player, "frostbite");
         if (frostbite > 0.0 && Math.random() < frostbite) {
             target.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.SLOWNESS, 60, 1));
+        }
+
+        double pinning = GearHelper.getScaledStatAmount(weapon, "pinning")
+            + GearHelper.getScaledEquippedArtifactStatAmount(player, "pinning");
+        if (pinning > 0.0 && Math.random() < pinning) {
+            target.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.SLOWNESS, 20, 4));
         }
 
         double venom = GearHelper.getScaledStatAmount(weapon, "venom") + GearHelper.getScaledEquippedArtifactStatAmount(player, "venom");
@@ -65,6 +86,16 @@ public abstract class ProjectileDamageMixin {
         double shock = GearHelper.getScaledStatAmount(weapon, "shock") + GearHelper.getScaledEquippedArtifactStatAmount(player, "shock");
         if (shock > 0.0 && Math.random() < shock) {
             target.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.WEAKNESS, 60, 0));
+        }
+
+        double wither = GearHelper.getScaledStatAmount(weapon, "wither") + GearHelper.getScaledEquippedArtifactStatAmount(player, "wither");
+        if (wither > 0.0 && Math.random() < wither) {
+            target.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.WITHER, 80, 0));
+        }
+
+        double grievous = GearHelper.getScaledStatAmount(weapon, "grievous") + GearHelper.getScaledEquippedArtifactStatAmount(player, "grievous");
+        if (grievous > 0.0 && Math.random() < grievous) {
+            TraitState.applyGrievousWound(target.getUUID(), 4000L);
         }
 
         double ambushBonus = GearHelper.getScaledStatAmount(weapon, "ambush_damage")
