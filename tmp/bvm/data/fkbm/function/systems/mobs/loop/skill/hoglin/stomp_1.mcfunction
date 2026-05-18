@@ -1,1 +1,0 @@
-execute as @e[type=minecraft:hoglin,tag=fkbm.hoglin.stomp.step1] at @s run function fkbm:systems/mobs/loop/skill/hoglin/stomp_2

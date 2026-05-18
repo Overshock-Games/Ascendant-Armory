@@ -1,3 +1,0 @@
-execute at @a[gamemode=!creative,gamemode=!spectator] as @e[type=minecraft:vex,tag=fkbm.vex.dodge,scores={fkbm.cd1=..0},distance=..48] at @s if entity @n[type=minecraft:arrow,distance=..6,nbt={inGround:0b}] run function fkbm:systems/mobs/loop/skill/vex/dodge
-
-execute at @e[type=minecraft:vex,tag=fkbm.vex.dodge] if entity @p[gamemode=!creative,gamemode=!spectator,distance=..48] run schedule function fkbm:systems/mobs/loop/skill/vex/dodge_loop 2t

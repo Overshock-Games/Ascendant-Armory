@@ -1,3 +1,0 @@
-execute at @a[gamemode=!creative,gamemode=!spectator] as @e[type=minecraft:wither_skeleton,tag=fkbm.wither_skeleton.shield,scores={fkbm.cd1=..0},distance=..32] at @s as @n[type=minecraft:arrow,tag=!fkbm.wither_skeleton.blocked,distance=..3,nbt={inGround:0b}] at @s run function fkbm:systems/mobs/loop/skill/wither_skeleton/arrowblock
-
-execute at @e[type=minecraft:wither_skeleton,tag=fkbm.wither_skeleton.shield] if entity @p[gamemode=!creative,gamemode=!spectator,distance=..32] run schedule function fkbm:systems/mobs/loop/skill/wither_skeleton/arrowblock_loop 1t

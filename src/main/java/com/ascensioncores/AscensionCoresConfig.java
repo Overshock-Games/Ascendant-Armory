@@ -43,8 +43,8 @@ public final class AscensionCoresConfig {
     public static double ancientCityAscensionCoreChance = 0.40;
     public static double ancientCityChaosCoreChance = 0.20;
     public static double treasureChaosCoreChance = 0.10;
-    public static double unenchantedLootAscensionChance = 0.05;
-    public static double treasureUnenchantedLootAscensionChance = 0.15;
+    public static double randomLootAscensionChance = 0.05;
+    public static double treasureRandomLootAscensionChance = 0.15;
 
     private static final Path CONFIG_PATH = Path.of("config", "ascensioncores.properties");
 
@@ -95,8 +95,10 @@ public final class AscensionCoresConfig {
         ancientCityAscensionCoreChance = parseDouble(props, "ancientCityAscensionCoreChance", ancientCityAscensionCoreChance, 0.0, 1.0, logger);
         ancientCityChaosCoreChance = parseDouble(props, "ancientCityChaosCoreChance", ancientCityChaosCoreChance, 0.0, 1.0, logger);
         treasureChaosCoreChance = parseDouble(props, "treasureChaosCoreChance", treasureChaosCoreChance, 0.0, 1.0, logger);
-        unenchantedLootAscensionChance = parseDouble(props, "unenchantedLootAscensionChance", unenchantedLootAscensionChance, 0.0, 1.0, logger);
-        treasureUnenchantedLootAscensionChance = parseDouble(props, "treasureUnenchantedLootAscensionChance", treasureUnenchantedLootAscensionChance, 0.0, 1.0, logger);
+        randomLootAscensionChance = parseDouble(props, "randomLootAscensionChance", 
+            parseDouble(props, "unenchantedLootAscensionChance", randomLootAscensionChance, 0.0, 1.0, logger), 0.0, 1.0, logger);
+        treasureRandomLootAscensionChance = parseDouble(props, "treasureRandomLootAscensionChance", 
+            parseDouble(props, "treasureUnenchantedLootAscensionChance", treasureRandomLootAscensionChance, 0.0, 1.0, logger), 0.0, 1.0, logger);
         StatPool.refresh();
 
         save(logger);
@@ -115,8 +117,8 @@ public final class AscensionCoresConfig {
             case "ancientCityAscensionCoreChance" -> ancientCityAscensionCoreChance;
             case "treasureChaosCoreChance" -> treasureChaosCoreChance;
             case "ancientCityChaosCoreChance" -> ancientCityChaosCoreChance;
-            case "unenchantedLootAscensionChance" -> unenchantedLootAscensionChance;
-            case "treasureUnenchantedLootAscensionChance" -> treasureUnenchantedLootAscensionChance;
+            case "randomLootAscensionChance" -> randomLootAscensionChance;
+            case "treasureRandomLootAscensionChance" -> treasureRandomLootAscensionChance;
             default -> 0.0;
         };
     }
@@ -222,10 +224,10 @@ public final class AscensionCoresConfig {
                 ancientCityChaosCoreChance=%.4f
                 # Chance for a Chaos Core in Bastion Treasure and End City Treasure chests.
                 treasureChaosCoreChance=%.4f
-                # Chance for a completely UNENCHANTED piece of gear to naturally roll Ascension levels.
-                # When it rolls, target level is random 1..min(maxLevel, materialCapacity).
-                unenchantedLootAscensionChance=%.4f
-                treasureUnenchantedLootAscensionChance=%.4f
+                # Chance for a piece of gear to naturally roll Ascension levels when found in chests.
+                # When it rolls, target level is weighted (higher levels are rarer).
+                randomLootAscensionChance=%.4f
+                treasureRandomLootAscensionChance=%.4f
                 """.formatted(
                     maxLevel,
                     upgradeCoreCostLevel1,
@@ -256,8 +258,8 @@ public final class AscensionCoresConfig {
                     ancientCityAscensionCoreChance,
                     ancientCityChaosCoreChance,
                     treasureChaosCoreChance,
-                    unenchantedLootAscensionChance,
-                    treasureUnenchantedLootAscensionChance
+                    randomLootAscensionChance,
+                    treasureRandomLootAscensionChance
                 );
     }
 

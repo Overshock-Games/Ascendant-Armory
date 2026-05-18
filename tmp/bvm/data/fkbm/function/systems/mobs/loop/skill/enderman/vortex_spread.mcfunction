@@ -1,1 +1,0 @@
-$spreadplayers ~ ~ 2 $(max_z) under $(max_y) false @a[tag=fkbm.enderman.vortexed,distance=..8]

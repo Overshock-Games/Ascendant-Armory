@@ -26,20 +26,16 @@ public abstract class LootTableMixin {
             if (stack.isEmpty() || !GearHelper.isGear(stack)) continue;
             if (GearHelper.hasAscensionData(stack)) continue;
 
-            int enchantCount = GearHelper.countNonCurseEnchantments(stack);
             int maxPossible = Math.min(GearHelper.getMaxLevel(), GearHelper.getMaterialCapacity(stack));
+            if (maxPossible <= 0) continue;
 
-            if (enchantCount <= 0) {
-                double chance = AscensionCoresConfig.unenchantedLootAscensionChance;
-                if (chance > 0 && Math.random() < chance && maxPossible > 0) {
-                    int targetLevel = 1 + (int)(Math.random() * maxPossible);
-                    GearHelper.setLevel(stack, targetLevel);
+            double chance = AscensionCoresConfig.randomLootAscensionChance;
+            if (chance > 0 && Math.random() < chance) {
+                int targetLevel = 1;
+                while (targetLevel < maxPossible && Math.random() < 0.4) {
+                    targetLevel++;
                 }
-            } else {
-                int targetLevel = Math.min(maxPossible, enchantCount);
-                if (targetLevel > 0) {
-                    GearHelper.setLevel(stack, targetLevel);
-                }
+                GearHelper.setLevel(stack, targetLevel);
             }
         }
     }
