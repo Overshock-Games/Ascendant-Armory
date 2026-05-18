@@ -43,8 +43,8 @@ public final class AscensionCoresConfig {
     public static double ancientCityAscensionCoreChance = 0.40;
     public static double ancientCityChaosCoreChance = 0.20;
     public static double treasureChaosCoreChance = 0.10;
-    public static double randomLootAscensionChance = 0.05;
-    public static double treasureRandomLootAscensionChance = 0.15;
+    public static double randomLootAscensionChance = 0.50;
+    public static double treasureRandomLootAscensionChance = 0.75;
 
     private static final Path CONFIG_PATH = Path.of("config", "ascensioncores.properties");
 
