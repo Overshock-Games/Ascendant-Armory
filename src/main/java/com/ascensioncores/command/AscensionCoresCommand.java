@@ -121,9 +121,9 @@ public final class AscensionCoresCommand {
             source.sendFailure(Component.literal("Held item must be level 1 or higher."));
             return 0;
         }
-        GearHelper.reroll(stack);
+        GearHelper.rerollDeterministic(stack, GearHelper.getRolledStats(stack).size());
         player.containerMenu.broadcastChanges();
-        source.sendSuccess(() -> Component.literal("Rerolled held item stats."), true);
+        source.sendSuccess(() -> Component.literal("Rerolled held item traits."), true);
         return 1;
     }
 

@@ -35,8 +35,8 @@ public final class TooltipHandler {
         }
 
         if (stack.is(ModItems.CHAOS_CORE)) {
-            lines.add(Component.literal("Rerolls an upgraded item's stats in an anvil.").withStyle(ChatFormatting.GRAY));
-            lines.add(Component.literal("The preview is fixed until the reroll is consumed.").withStyle(ChatFormatting.DARK_GRAY));
+            lines.add(Component.literal("Rerolls traits from the bottom of an upgraded item in an anvil.").withStyle(ChatFormatting.GRAY));
+            lines.add(Component.literal("Stack more cores to reroll more traits at once.").withStyle(ChatFormatting.DARK_GRAY));
             return;
         }
 
@@ -47,7 +47,7 @@ public final class TooltipHandler {
         List<RolledStat> stats = GearHelper.getRolledStats(stack);
         boolean showNextLevelPreview = !isAnvilResultTooltip();
 
-        lines.add(Component.literal("Level: " + level + " - " + levelTitle(level) + "  (" + stats.size() + "/" + capacity + " stats)")
+        lines.add(Component.literal("Level: " + level + " - " + levelTitle(level) + "  (" + stats.size() + "/" + capacity + " traits)")
             .withStyle(style -> style.withColor(levelColor(level)).withBold(true)));
 
         for (int i = 0; i < stats.size(); i++) {
@@ -62,7 +62,7 @@ public final class TooltipHandler {
                 double next = rolled.amount() * (multiplier + 1);
                 display += " ➔ " + formatStatValue(def, rolled.id(), next);
             }
-            lines.add(Component.literal(display).withStyle(ChatFormatting.DARK_AQUA));
+            lines.add(Component.literal(display).withStyle(style -> style.withColor(statColor(rolled.id()))));
         }
 
         int enchantSlots = level;
@@ -104,6 +104,15 @@ public final class TooltipHandler {
             case 3 -> "Ascendant";
             case 4 -> "Mythic";
             default -> "Divine";
+        };
+    }
+
+    private static int statColor(String id) {
+        return switch (id) {
+            case "venom"     -> 0x55FF55;
+            case "frostbite" -> 0x55FFFF;
+            case "shock"     -> 0xFFFF55;
+            default          -> 0x2BBBCC;
         };
     }
 

@@ -8,7 +8,11 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Properties;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class AscensionCoresConfig {
 
@@ -40,6 +44,11 @@ public final class AscensionCoresConfig {
     public static double treasureChaosCoreChance = 0.10;
     public static double randomLootAscensionChance = 0.40;
     public static double treasureRandomLootAscensionChance = 0.6;
+
+    public static Set<String> disabledWeaponTraits  = Set.of();
+    public static Set<String> disabledRangedTraits  = Set.of();
+    public static Set<String> disabledArmorTraits   = Set.of();
+    public static Set<String> disabledToolTraits    = Set.of();
 
     public static boolean enableBetterVanillaMobsIntegration = true;
     public static double betterVanillaMobsAscensionCoreDropChance = 0.03;
@@ -104,6 +113,11 @@ public final class AscensionCoresConfig {
         betterVanillaMobsChaosCoreDropChance = parseDouble(props, "betterVanillaMobsChaosCoreDropChance", betterVanillaMobsChaosCoreDropChance, 0.0, 1.0, logger);
         betterVanillaMobsChaosCoreDropChancePerStar = parseDouble(props, "betterVanillaMobsChaosCoreDropChancePerStar",
             betterVanillaMobsChaosCoreDropChancePerStar, 0.0, 1.0, logger);
+
+        disabledWeaponTraits = parseStringSet(props, "disabledWeaponTraits", logger);
+        disabledRangedTraits = parseStringSet(props, "disabledRangedTraits", logger);
+        disabledArmorTraits  = parseStringSet(props, "disabledArmorTraits",  logger);
+        disabledToolTraits   = parseStringSet(props, "disabledToolTraits",   logger);
 
         StatPool.refresh();
 
@@ -290,6 +304,15 @@ public final class AscensionCoresConfig {
             logger.warn("[AscensionCores] '{}' is not a valid integer ('{}'), using default {}", key, raw, def);
             return def;
         }
+    }
+
+    static Set<String> parseStringSet(Properties props, String key, Logger logger) {
+        String raw = props.getProperty(key);
+        if (raw == null || raw.isBlank()) return Set.of();
+        return Arrays.stream(raw.split(","))
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .collect(Collectors.toUnmodifiableSet());
     }
 
     static double parseDouble(Properties props, String key, double def, double min, double max, Logger logger) {

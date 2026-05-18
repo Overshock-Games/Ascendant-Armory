@@ -107,23 +107,22 @@ public final class GearHelper {
         rebuildAttributes(stack, newLevel, stats);
     }
 
-    public static void reroll(ItemStack stack) {
-        reroll(stack, new Random());
+    public static void rerollDeterministic(ItemStack stack, int rerollCount) {
+        reroll(stack, new Random(getChaosRerollSeed(stack)), rerollCount);
     }
 
-    public static void rerollDeterministic(ItemStack stack) {
-        reroll(stack, new Random(getChaosRerollSeed(stack)));
-    }
-
-    private static void reroll(ItemStack stack, Random random) {
+    private static void reroll(ItemStack stack, Random random, int rerollCount) {
         int level = getLevel(stack);
         int statCount = Math.min(level, getMaterialCapacity(stack));
         List<StatPool.StatDef> pool = getPool(stack);
 
-        List<RolledStat> stats = new ArrayList<>();
-        for (int i = 0; i < statCount; i++) {
+        List<RolledStat> existing = getRolledStats(stack);
+        int keep = Math.max(0, existing.size() - rerollCount);
+        List<RolledStat> stats = new ArrayList<>(existing.subList(0, keep));
+        while (stats.size() < statCount) {
             RolledStat s = StatPool.rollStat(stats, pool, level, random);
             if (s != null) stats.add(s);
+            else break;
         }
         stack.set(ModComponents.ROLLED_STATS, stats);
         rebuildAttributes(stack, level, stats);

@@ -69,11 +69,12 @@ public abstract class AnvilMenuMixin {
                 }
                 return;
             }
+            int rerollCount = right.getCount();
             ItemStack result = left.copy();
-            GearHelper.rerollDeterministic(result);
+            GearHelper.rerollDeterministic(result, rerollCount);
             resultSlots.setItem(0, result);
-            repairItemCountCost = 1;
-            cost.set(ascensioncores$rerollXpCost(currentLevel));
+            repairItemCountCost = rerollCount;
+            cost.set(ascensioncores$rerollXpCost(currentLevel) * rerollCount);
             return;
         }
 

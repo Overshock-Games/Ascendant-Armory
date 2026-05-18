@@ -61,7 +61,7 @@ public class JeiPlugin implements IModPlugin {
         ItemStack rerollInput = new ItemStack(Items.DIAMOND_SWORD);
         GearHelper.setLevel(rerollInput, 3);
         ItemStack rerollOutput = rerollInput.copy();
-        GearHelper.rerollDeterministic(rerollOutput);
+        GearHelper.rerollDeterministic(rerollOutput, GearHelper.getRolledStats(rerollOutput).size());
         recipes.add(factory.createAnvilRecipe(
             List.of(rerollInput),
             List.of(new ItemStack(ModItems.CHAOS_CORE)),
@@ -114,8 +114,8 @@ public class JeiPlugin implements IModPlugin {
         registration.addIngredientInfo(
             new ItemStack(ModItems.CHAOS_CORE),
             VanillaTypes.ITEM_STACK,
-            Component.literal("Chaos Cores are used in an Anvil to reroll the stats on upgraded gear."),
-            Component.literal("The gear must be at least Level 1."),
+            Component.literal("Chaos Cores are used in an Anvil to reroll traits on upgraded gear."),
+            Component.literal("The gear must be at least Level 1. Stack cores to reroll more traits from the bottom."),
             Component.literal("The preview is deterministic for the current item, so slot cycling cannot fish for new rolls.")
         );
     }
@@ -141,14 +141,14 @@ public class JeiPlugin implements IModPlugin {
             VanillaTypes.ITEM_STACK,
             Component.literal("Artifacts Compatibility"),
             Component.literal("When Artifacts is installed, artifact items can be leveled."),
-            Component.literal("Equipped artifact custom Ascension stats are counted through Artifacts' equipment API."),
-            Component.literal("Artifacts use a conservative 2-stat capacity.")
+            Component.literal("Equipped artifact custom Ascension traits are counted through Artifacts' equipment API."),
+            Component.literal("Artifacts use a conservative 2-trait capacity.")
         );
     }
 
     private void registerStatPoolInfo(IRecipeRegistration registration, String type, List<StatPool.StatDef> pool) {
         List<Component> stats = new ArrayList<>();
-        stats.add(Component.literal("== " + type + " Stat Pool ==").withStyle(net.minecraft.ChatFormatting.BOLD));
+        stats.add(Component.literal("== " + type + " Trait Pool ==").withStyle(net.minecraft.ChatFormatting.BOLD));
         for (StatPool.StatDef def : pool) {
             stats.add(Component.literal("L" + def.minLevel() + "+ - " + def.displayName()
                 + " (" + StatPool.formatValue(def, def.minAmount())
