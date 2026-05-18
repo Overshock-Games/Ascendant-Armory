@@ -5,6 +5,8 @@ import com.ascensioncores.component.ModComponents;
 import com.ascensioncores.gear.GearHelper;
 import com.ascensioncores.gear.RolledStat;
 import com.ascensioncores.item.ModItems;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.server.level.ServerPlayer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -56,7 +58,8 @@ public abstract class AnvilMenuMixin {
                 return;
             }
             ItemStack result = left.copy();
-            GearHelper.levelUp(result);
+            GearHelper.levelUpDeterministic(result);
+            GearHelper.applyTrim(result, ascensioncores$registryAccess());
             resultSlots.setItem(0, result);
             repairItemCountCost = coreCost;
             cost.set(ascensioncores$upgradeXpCost(currentLevel));
@@ -78,6 +81,7 @@ public abstract class AnvilMenuMixin {
             int rerollCount = right.getCount();
             ItemStack result = left.copy();
             GearHelper.rerollDeterministic(result, rerollCount);
+            GearHelper.applyTrim(result, ascensioncores$registryAccess());
             resultSlots.setItem(0, result);
             repairItemCountCost = rerollCount;
             cost.set(ascensioncores$rerollXpCost(currentLevel) * rerollCount);
@@ -103,6 +107,7 @@ public abstract class AnvilMenuMixin {
                     newStats.add(donated);
                     result.set(ModComponents.ROLLED_STATS, newStats);
                     GearHelper.rebuildAttributes(result, GearHelper.getLevel(result), newStats);
+                    GearHelper.applyTrim(result, ascensioncores$registryAccess());
                     resultSlots.setItem(0, result);
                     cost.set(Math.max(1, GearHelper.getLevel(right)));
                     return;
@@ -144,6 +149,12 @@ public abstract class AnvilMenuMixin {
         }
     }
 
+
+    @org.spongepowered.asm.mixin.Unique
+    private RegistryAccess ascensioncores$registryAccess() {
+        Player p = ((ItemCombinerMenuAccessor) (Object) this).getPlayer();
+        return p instanceof ServerPlayer sp ? sp.level().registryAccess() : null;
+    }
 
     @org.spongepowered.asm.mixin.Unique
     private static int ascensioncores$upgradeXpCost(int currentLevel) {

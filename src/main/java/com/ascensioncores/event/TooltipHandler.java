@@ -45,10 +45,23 @@ public final class TooltipHandler {
         int level = GearHelper.getLevel(stack);
         int capacity = Math.min(GearHelper.getMaterialCapacity(stack), GearHelper.getMaxLevel());
         List<RolledStat> stats = GearHelper.getRolledStats(stack);
-        boolean showNextLevelPreview = !isAnvilResultTooltip();
+        boolean showNextLevelPreview = !suppressNextLevelPreview();
 
-        lines.add(Component.literal("Level: " + level + " - " + levelTitle(level) + "  (" + stats.size() + "/" + capacity + " traits)")
+        if (level > 0 && !lines.isEmpty()) {
+            Component original = lines.get(0);
+            lines.set(0, Component.literal(levelTitle(level) + " ")
+                .withStyle(style -> style.withColor(levelColor(level)))
+                .append(original));
+        }
+
+        int maxLevel = GearHelper.getMaxLevel();
+        StringBuilder pips = new StringBuilder("  ");
+        for (int p = 1; p <= maxLevel; p++) pips.append(p <= level ? "✦" : "○");
+        lines.add(Component.literal(pips.toString())
             .withStyle(style -> style.withColor(levelColor(level)).withBold(true)));
+
+        lines.add(Component.literal("  (" + stats.size() + "/" + capacity + " traits)")
+            .withStyle(style -> style.withColor(levelColor(level))));
 
         for (int i = 0; i < stats.size(); i++) {
             RolledStat rolled = stats.get(i);
@@ -87,13 +100,23 @@ public final class TooltipHandler {
         return StatPool.formatValue(def, value);
     }
 
-    private static boolean isAnvilResultTooltip() {
+    private static boolean suppressNextLevelPreview() {
         Minecraft client = Minecraft.getInstance();
         if (!(client.screen instanceof AbstractContainerScreen<?> screen)) return false;
         if (!(screen.getMenu() instanceof AnvilMenu anvilMenu)) return false;
 
         Slot hoveredSlot = ((AbstractContainerScreenAccessor) screen).ascensioncores$getHoveredSlot();
-        return hoveredSlot != null && hoveredSlot.index == anvilMenu.getResultSlot();
+        if (hoveredSlot == null) return false;
+
+        // suppress on result slot always
+        if (hoveredSlot.index == anvilMenu.getResultSlot()) return true;
+
+        // suppress on left input when a chaos core is in right input (reroll, not upgrade)
+        if (hoveredSlot.index == 0) {
+            ItemStack right = anvilMenu.getSlot(1).getItem();
+            return right.is(ModItems.CHAOS_CORE);
+        }
+        return false;
     }
 
     private static String levelTitle(int level) {

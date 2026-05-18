@@ -44,6 +44,8 @@ public final class AscensionCoresConfig {
     public static double randomLootAscensionChance = 0.40;
     public static double treasureRandomLootAscensionChance = 0.6;
 
+    public static boolean enableAscensionTrims = true;
+
     public static Set<String> disabledWeaponTraits  = Set.of();
     public static Set<String> disabledRangedTraits  = Set.of();
     public static Set<String> disabledArmorTraits   = Set.of();
@@ -104,6 +106,8 @@ public final class AscensionCoresConfig {
             parseDouble(props, "unenchantedLootAscensionChance", randomLootAscensionChance, 0.0, 1.0, logger), 0.0, 1.0, logger);
         treasureRandomLootAscensionChance = parseDouble(props, "treasureRandomLootAscensionChance", 
             parseDouble(props, "treasureUnenchantedLootAscensionChance", treasureRandomLootAscensionChance, 0.0, 1.0, logger), 0.0, 1.0, logger);
+
+        enableAscensionTrims = parseBoolean(props, "enableAscensionTrims", enableAscensionTrims, logger);
 
         enableBetterVanillaMobsIntegration = parseBoolean(props, "enableBetterVanillaMobsIntegration", enableBetterVanillaMobsIntegration, logger);
         betterVanillaMobsAscensionCoreDropChance = parseDouble(props, "betterVanillaMobsAscensionCoreDropChance", betterVanillaMobsAscensionCoreDropChance, 0.0, 1.0, logger);
@@ -227,6 +231,12 @@ public final class AscensionCoresConfig {
                 randomLootAscensionChance=%.4f
                 treasureRandomLootAscensionChance=%.4f
 
+                # ── Ascension trims ───────────────────────────────────────────
+                # If true, ascended armor automatically receives a cosmetic trim:
+                # material = ascension level, pattern = first trait.
+                # Vanilla smithing-table trim application is blocked on ascended gear.
+                enableAscensionTrims=%s
+
                 # ── Trait pools ───────────────────────────────────────────────
                 # Comma-separated list of trait IDs to exclude from rolling, per pool.
                 # Leave blank to allow all. Example: disabledWeaponTraits=shock,venom
@@ -294,6 +304,7 @@ public final class AscensionCoresConfig {
                     treasureChaosCoreChance,
                     randomLootAscensionChance,
                     treasureRandomLootAscensionChance,
+                    enableAscensionTrims,
                     setToString(disabledWeaponTraits),
                     setToString(disabledRangedTraits),
                     setToString(disabledArmorTraits),

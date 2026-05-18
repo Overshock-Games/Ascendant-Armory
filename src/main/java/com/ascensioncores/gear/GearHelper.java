@@ -6,7 +6,14 @@ import com.ascensioncores.compat.FarmersDelightCompat;
 import com.ascensioncores.compat.MoreDelightCompat;
 import com.ascensioncores.compat.ProgressionRebornCompat;
 import com.ascensioncores.component.ModComponents;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.equipment.trim.ArmorTrim;
+import net.minecraft.world.item.equipment.trim.TrimMaterial;
+import net.minecraft.world.item.equipment.trim.TrimPattern;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -27,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 
@@ -85,10 +93,18 @@ public final class GearHelper {
     // ── Upgrade operations ──────────────────────────────────────────────────
 
     public static void levelUp(ItemStack stack) {
-        setLevel(stack, getLevel(stack) + 1);
+        setLevel(stack, getLevel(stack) + 1, null);
+    }
+
+    public static void levelUpDeterministic(ItemStack stack) {
+        setLevel(stack, getLevel(stack) + 1, new Random(getUpgradeSeed(stack)));
     }
 
     public static void setLevel(ItemStack stack, int requestedLevel) {
+        setLevel(stack, requestedLevel, null);
+    }
+
+    private static void setLevel(ItemStack stack, int requestedLevel, Random rng) {
         int newLevel = Math.max(0, Math.min(requestedLevel, getMaxLevel()));
         List<RolledStat> stats = new ArrayList<>(getRolledStats(stack));
 
@@ -97,7 +113,9 @@ public final class GearHelper {
             stats.remove(stats.size() - 1);
         }
         while (stats.size() < statCount) {
-            RolledStat rolled = StatPool.rollStat(stats, getPool(stack), newLevel);
+            RolledStat rolled = rng != null
+                ? StatPool.rollStat(stats, getPool(stack), newLevel, rng)
+                : StatPool.rollStat(stats, getPool(stack), newLevel);
             if (rolled == null) break;
             stats.add(rolled);
         }
@@ -126,6 +144,19 @@ public final class GearHelper {
         }
         stack.set(ModComponents.ROLLED_STATS, stats);
         rebuildAttributes(stack, level, stats);
+    }
+
+    private static long getUpgradeSeed(ItemStack stack) {
+        long seed = 0xDEADBEEFCAFEL;
+        Identifier itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        seed = mixSeed(seed, itemId.toString().hashCode());
+        seed = mixSeed(seed, getLevel(stack));
+        seed = mixSeed(seed, getMaterialCapacity(stack));
+        for (RolledStat stat : getRolledStats(stack)) {
+            seed = mixSeed(seed, stat.id().hashCode());
+            seed = mixSeed(seed, Double.doubleToLongBits(stat.amount()));
+        }
+        return seed;
     }
 
     private static long getChaosRerollSeed(ItemStack stack) {
@@ -392,6 +423,36 @@ public final class GearHelper {
         if (isWeapon(stack)) return StatPool.WEAPON_POOL;
         if (isArmor(stack))  return StatPool.ARMOR_POOL;
         return StatPool.TOOL_POOL;
+    }
+
+    // ── Trim ────────────────────────────────────────────────────────────────
+
+    public static void applyTrim(ItemStack stack, RegistryAccess registryAccess) {
+        if (!AscensionCoresConfig.enableAscensionTrims) return;
+        if (!isArmor(stack)) return;
+
+        int level = getLevel(stack);
+        if (level == 0) {
+            stack.remove(DataComponents.TRIM);
+            return;
+        }
+
+        List<RolledStat> stats = getRolledStats(stack);
+        if (stats.isEmpty()) return;
+
+        try {
+            Registry<TrimPattern> patternReg = registryAccess.lookupOrThrow(Registries.TRIM_PATTERN);
+            Registry<TrimMaterial> materialReg = registryAccess.lookupOrThrow(Registries.TRIM_MATERIAL);
+
+            Optional<Holder.Reference<TrimPattern>> pattern = patternReg.get(
+                Identifier.fromNamespaceAndPath("ascensioncores", stats.get(0).id()));
+            Optional<Holder.Reference<TrimMaterial>> material = materialReg.get(
+                Identifier.fromNamespaceAndPath("ascensioncores", "level_" + level));
+
+            if (pattern.isEmpty() || material.isEmpty()) return;
+
+            stack.set(DataComponents.TRIM, new ArmorTrim(material.get(), pattern.get()));
+        } catch (Exception ignored) {}
     }
 
     public static double getScaledStatAmount(ItemStack stack, String statId) {
