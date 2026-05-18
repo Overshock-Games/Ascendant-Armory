@@ -2,10 +2,8 @@ package com.ascensioncores.mixin;
 
 import com.ascensioncores.AscensionCoresConfig;
 import com.ascensioncores.gear.GearHelper;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,15 +27,13 @@ public abstract class LootTableMixin {
             if (GearHelper.hasAscensionData(stack)) continue;
 
             int enchantCount = GearHelper.countNonCurseEnchantments(stack);
-            int maxPossible = Math.min(Math.min(GearHelper.getMaxLevel(), AscensionCoresConfig.naturalLootMaxLevel), GearHelper.getMaterialCapacity(stack));
-            
+            int maxPossible = Math.min(GearHelper.getMaxLevel(), GearHelper.getMaterialCapacity(stack));
+
             if (enchantCount <= 0) {
                 double chance = AscensionCoresConfig.unenchantedLootAscensionChance;
-                if (chance > 0 && Math.random() < chance) {
-                    if (maxPossible > 0) {
-                        int targetLevel = 1 + (int)(Math.random() * maxPossible);
-                        GearHelper.setLevel(stack, targetLevel);
-                    }
+                if (chance > 0 && Math.random() < chance && maxPossible > 0) {
+                    int targetLevel = 1 + (int)(Math.random() * maxPossible);
+                    GearHelper.setLevel(stack, targetLevel);
                 }
             } else {
                 int targetLevel = Math.min(maxPossible, enchantCount);

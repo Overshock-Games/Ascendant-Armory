@@ -65,7 +65,7 @@ public final class StatPool {
     private static List<StatDef> createWeaponPool() {
         List<StatDef> pool = new ArrayList<>(List.of(
             new StatDef("life_steal",           PuffishAttributes.LIFE_STEAL,           0.02, 0.06, "Life Steal",           "%"),
-            new StatDef("reach",                Attributes.ENTITY_INTERACTION_RANGE,    0.50, 1.50, "Reach",                " blk"),
+            new StatDef("reach",                Attributes.ENTITY_INTERACTION_RANGE,    0.25, 0.75, "Reach",                " blk"),
             new StatDef("attack_speed",         Attributes.ATTACK_SPEED,                0.10, 0.30, "Attack Speed",         " pts"),
             new StatDef("armor_shred",          PuffishAttributes.ARMOR_SHRED,          0.50, 2.00, "Armor Shred",          " pts"),
             new StatDef("toughness_shred",      PuffishAttributes.TOUGHNESS_SHRED,      0.30, 1.00, "Toughness Shred",      " pts"),
@@ -184,7 +184,7 @@ public final class StatPool {
 
     public static String formatValue(StatDef def, double scaledAmount) {
         if ("%".equals(def.unit())) {
-            return String.format("+%.0f%%", scaledAmount * 100);
+            return formatSigned(scaledAmount * 100) + "%";
         }
         if (" ticks".equals(def.unit())) {
             return formatSigned(Math.round(scaledAmount)) + def.unit();

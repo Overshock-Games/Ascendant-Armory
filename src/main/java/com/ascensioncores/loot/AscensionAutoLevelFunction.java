@@ -48,16 +48,13 @@ public final class AscensionAutoLevelFunction extends LootItemConditionalFunctio
         }
 
         int enchantCount = GearHelper.countNonCurseEnchantments(stack);
-        int cap = treasure ? AscensionCoresConfig.treasureNaturalLootMaxLevel : AscensionCoresConfig.naturalLootMaxLevel;
-        int maxPossible = Math.min(Math.min(GearHelper.getMaxLevel(), cap), GearHelper.getMaterialCapacity(stack));
-        
+        int maxPossible = Math.min(GearHelper.getMaxLevel(), GearHelper.getMaterialCapacity(stack));
+
         if (enchantCount <= 0) {
             double chance = treasure ? AscensionCoresConfig.treasureUnenchantedLootAscensionChance : AscensionCoresConfig.unenchantedLootAscensionChance;
-            if (chance > 0 && context.getRandom().nextFloat() < chance) {
-                if (maxPossible > 0) {
-                    int targetLevel = 1 + context.getRandom().nextInt(maxPossible);
-                    GearHelper.setLevel(stack, targetLevel);
-                }
+            if (chance > 0 && context.getRandom().nextFloat() < chance && maxPossible > 0) {
+                int targetLevel = 1 + context.getRandom().nextInt(maxPossible);
+                GearHelper.setLevel(stack, targetLevel);
             }
         } else {
             int targetLevel = Math.min(maxPossible, enchantCount);

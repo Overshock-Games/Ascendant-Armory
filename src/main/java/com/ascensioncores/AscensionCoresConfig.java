@@ -38,8 +38,6 @@ public final class AscensionCoresConfig {
     public static double ancientCityAscensionCoreChance = 0.50;
     public static double ancientCityChaosCoreChance = 0.20;
     public static double treasureChaosCoreChance = 0.10;
-    public static int naturalLootMaxLevel = 2;
-    public static int treasureNaturalLootMaxLevel = 4;
     public static double unenchantedLootAscensionChance = 0.05;
     public static double treasureUnenchantedLootAscensionChance = 0.15;
 
@@ -86,8 +84,6 @@ public final class AscensionCoresConfig {
         ancientCityAscensionCoreChance = parseDouble(props, "ancientCityAscensionCoreChance", ancientCityAscensionCoreChance, 0.0, 1.0, logger);
         ancientCityChaosCoreChance = parseDouble(props, "ancientCityChaosCoreChance", ancientCityChaosCoreChance, 0.0, 1.0, logger);
         treasureChaosCoreChance = parseDouble(props, "treasureChaosCoreChance", treasureChaosCoreChance, 0.0, 1.0, logger);
-        naturalLootMaxLevel = parseInt(props, "naturalLootMaxLevel", naturalLootMaxLevel, 0, maxLevel, logger);
-        treasureNaturalLootMaxLevel = parseInt(props, "treasureNaturalLootMaxLevel", treasureNaturalLootMaxLevel, 0, maxLevel, logger);
         unenchantedLootAscensionChance = parseDouble(props, "unenchantedLootAscensionChance", unenchantedLootAscensionChance, 0.0, 1.0, logger);
         treasureUnenchantedLootAscensionChance = parseDouble(props, "treasureUnenchantedLootAscensionChance", treasureUnenchantedLootAscensionChance, 0.0, 1.0, logger);
         StatPool.refresh();
@@ -199,14 +195,8 @@ public final class AscensionCoresConfig {
                 ancientCityChaosCoreChance=%.4f
                 # Chance for a Chaos Core in Bastion Treasure and End City Treasure chests.
                 treasureChaosCoreChance=%.4f
-                # Max level naturally-generated enchanted gear can receive in normal loot tables.
-                # Set to 0 to disable natural loot auto-leveling outside treasure tables.
-                naturalLootMaxLevel=%d
-                # Max level naturally-generated enchanted gear can receive in high-value treasure
-                # tables: Bastion Treasure, End City Treasure, and Ancient City.
-                treasureNaturalLootMaxLevel=%d
-                
                 # Chance for a completely UNENCHANTED piece of gear to naturally roll Ascension levels.
+                # When it rolls, target level is random 1..min(maxLevel, materialCapacity).
                 unenchantedLootAscensionChance=%.4f
                 treasureUnenchantedLootAscensionChance=%.4f
                 """.formatted(
@@ -234,8 +224,6 @@ public final class AscensionCoresConfig {
                     ancientCityAscensionCoreChance,
                     ancientCityChaosCoreChance,
                     treasureChaosCoreChance,
-                    naturalLootMaxLevel,
-                    treasureNaturalLootMaxLevel,
                     unenchantedLootAscensionChance,
                     treasureUnenchantedLootAscensionChance
                 );

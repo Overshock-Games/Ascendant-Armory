@@ -125,9 +125,8 @@ public class JeiPlugin implements IModPlugin {
             new ItemStack(ModItems.ASCENSION_CORE),
             VanillaTypes.ITEM_STACK,
             Component.literal("Natural Loot"),
-            Component.literal("Generated enchanted gear can auto-receive Ascension levels."),
-            Component.literal("Normal loot is capped by naturalLootMaxLevel."),
-            Component.literal("Bastion Treasure, End City Treasure, and Ancient City use treasureNaturalLootMaxLevel.")
+            Component.literal("Generated enchanted gear auto-receives Ascension levels equal to its non-curse enchant count."),
+            Component.literal("Capped only by item material capacity and the global maxLevel.")
         );
         registration.addIngredientInfo(
             new ItemStack(ModItems.ASCENSION_CORE),

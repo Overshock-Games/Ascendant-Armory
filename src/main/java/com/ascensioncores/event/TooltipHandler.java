@@ -43,7 +43,7 @@ public final class TooltipHandler {
         if (!GearHelper.isGear(stack)) return;
 
         int level = GearHelper.getLevel(stack);
-        int capacity = GearHelper.getMaterialCapacity(stack);
+        int capacity = Math.min(GearHelper.getMaterialCapacity(stack), GearHelper.getMaxLevel());
         List<RolledStat> stats = GearHelper.getRolledStats(stack);
         boolean showNextLevelPreview = !isAnvilResultTooltip();
 
@@ -57,10 +57,10 @@ public final class TooltipHandler {
 
             int multiplier = level - i;
             double current = rolled.amount() * multiplier;
-            String display = "  ✦ " + def.displayName() + ": " + StatPool.formatValue(def, current);
+            String display = "  ✦ " + def.displayName() + ": " + formatStatValue(def, rolled.id(), current);
             if (showNextLevelPreview && level < GearHelper.getMaxLevel()) {
                 double next = rolled.amount() * (multiplier + 1);
-                display += " ➔ " + StatPool.formatValue(def, next);
+                display += " ➔ " + formatStatValue(def, rolled.id(), next);
             }
             lines.add(Component.literal(display).withStyle(ChatFormatting.DARK_AQUA));
         }
@@ -74,6 +74,17 @@ public final class TooltipHandler {
             lines.add(Component.literal("  Cost to Level: " + coreCost + " Ascension Cores")
                 .withStyle(ChatFormatting.GRAY));
         }
+    }
+
+    private static String formatStatValue(StatPool.StatDef def, String id, double value) {
+        if (id.equals("frostbite") || id.equals("venom") || id.equals("shock")) {
+            return String.format("+%.1f%% Chance", value * 100.0);
+        } else if (id.equals("life_steal")) {
+            return String.format("+%.1f%%", value * 100.0);
+        } else if (id.equals("reach") || id.equals("stealth")) {
+            return String.format("+%.2f Blocks", value);
+        }
+        return StatPool.formatValue(def, value);
     }
 
     private static boolean isAnvilResultTooltip() {

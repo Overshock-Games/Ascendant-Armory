@@ -9,7 +9,7 @@
     "PlayerAttackMixin",
     "LivingEntityDamageMixin",
     "LootTableMixin",
-    "GrindstoneMenuM
+    "GrindstoneMenuMixin",
     "ProjectileDamageMixin",
     "LivingEntityEffectMixin"
   ],
