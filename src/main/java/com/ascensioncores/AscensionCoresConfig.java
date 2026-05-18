@@ -38,8 +38,8 @@ public final class AscensionCoresConfig {
     public static int treasureAscensionCoreMinDrop = 1;
     public static int treasureAscensionCoreMaxDrop = 4;
     public static double treasureChaosCoreChance = 0.10;
-    public static double randomLootAscensionChance = 0.50;
-    public static double treasureRandomLootAscensionChance = 0.75;
+    public static double randomLootAscensionChance = 0.40;
+    public static double treasureRandomLootAscensionChance = 0.6;
 
     public static boolean enableBetterVanillaMobsIntegration = true;
     public static double betterVanillaMobsAscensionCoreDropChance = 0.03;
