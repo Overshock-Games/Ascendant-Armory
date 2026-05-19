@@ -106,7 +106,7 @@ Every proc-based trait has its own particle effect and sound.
 
 ## Compatibility
 
-**Required**: Fabric API + [Puffish Attributes](https://modrinth.com/mod/puffish-attributes).
+**Required**: Fabric API + [Pufferfish's Attributes](https://modrinth.com/mod/attributes).
 
 <details>
 <summary><b>Optional integrations + plays-nice list (click to expand)</b></summary>
