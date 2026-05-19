@@ -17,6 +17,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.component.TooltipDisplay;
@@ -36,6 +37,9 @@ public final class GearHelper {
     // ── Classification ──────────────────────────────────────────────────────
 
     public static boolean isWeapon(ItemStack stack) {
+        if (stack.is(ItemTags.PICKAXES) || stack.is(ItemTags.SHOVELS) || stack.is(ItemTags.HOES)) {
+            return false;
+        }
         Item item = stack.getItem();
         return stack.has(DataComponents.WEAPON)
             || item == Items.TRIDENT
@@ -61,7 +65,10 @@ public final class GearHelper {
 
     /** Tools = has TOOL component but not WEAPON (pickaxes, shovels, hoes). Axes are weapons. */
     public static boolean isTool(ItemStack stack) {
-        return stack.has(DataComponents.TOOL) && !stack.has(DataComponents.WEAPON);
+        if (stack.is(ItemTags.PICKAXES) || stack.is(ItemTags.SHOVELS) || stack.is(ItemTags.HOES)) {
+            return true;
+        }
+        return stack.has(DataComponents.TOOL) && !isWeapon(stack);
     }
 
     public static boolean isGear(ItemStack stack) {
@@ -422,6 +429,7 @@ public final class GearHelper {
     public static List<StatPool.StatDef> getPool(ItemStack stack) {
         if (ArtifactsCompat.isHandArtifact(stack.getItem())) return StatPool.WEAPON_POOL;
         if (ArtifactsCompat.isArtifact(stack.getItem())) return StatPool.ARMOR_POOL;
+        if (isTool(stack)) return StatPool.TOOL_POOL;
         if (isRangedWeapon(stack)) return StatPool.RANGED_WEAPON_POOL;
         if (isWeapon(stack)) return StatPool.WEAPON_POOL;
         if (isArmor(stack))  return StatPool.ARMOR_POOL;

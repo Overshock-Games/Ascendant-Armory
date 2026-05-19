@@ -84,7 +84,7 @@ public final class StatPool {
             new StatDef("venom",                null,                                   0.03, 0.10, "Venom",                "%"),
             new StatDef("shock",                null,                                   0.03, 0.10, "Shock",                "%"),
             new StatDef("sprinting_speed",      PuffishAttributes.SPRINTING_SPEED,      0.03, 0.10, "Sprint Speed",         "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
-            new StatDef("stealth",              PuffishAttributes.STEALTH,              0.10, 0.30, "Stealth",              " blk"),
+            new StatDef("stealth",              PuffishAttributes.STEALTH,              0.30, 1.00, "Stealth",              " blk"),
             new StatDef("jump",                 PuffishAttributes.JUMP,                 0.05, 0.20, "Jump Height",          "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
             new StatDef("repair_discount",      PuffishAttributes.REPAIR_COST,         -0.15,-0.05, "Repair Discount",      "%"),
             new StatDef("opening_damage",       null,                                   0.05, 0.10, "Opening Damage",       "%"),
@@ -109,7 +109,7 @@ public final class StatPool {
             new StatDef("venom",                null,                                   0.03, 0.10, "Venom",                "%"),
             new StatDef("shock",                null,                                   0.03, 0.10, "Shock",                "%"),
             new StatDef("sprinting_speed",      PuffishAttributes.SPRINTING_SPEED,      0.03, 0.10, "Sprint Speed",         "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
-            new StatDef("stealth",              PuffishAttributes.STEALTH,              0.10, 0.30, "Stealth",              " blk"),
+            new StatDef("stealth",              PuffishAttributes.STEALTH,              0.30, 1.00, "Stealth",              " blk"),
             new StatDef("jump",                 PuffishAttributes.JUMP,                 0.05, 0.20, "Jump Height",          "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
             new StatDef("repair_discount",      PuffishAttributes.REPAIR_COST,         -0.15,-0.05, "Repair Discount",      "%"),
             new StatDef("opening_damage",       null,                                   0.05, 0.10, "Opening Damage",       "%"),
@@ -152,7 +152,7 @@ public final class StatPool {
             new StatDef("jump",                 PuffishAttributes.JUMP,                 0.05, 0.20, "Jump Height",          "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
             new StatDef("natural_regeneration", PuffishAttributes.NATURAL_REGENERATION, 0.05, 0.20, "Natural Regeneration", "%"),
             new StatDef("stamina",              PuffishAttributes.STAMINA,              0.20, 0.60, "Stamina",              " pts"),
-            new StatDef("stealth",              PuffishAttributes.STEALTH,              0.10, 0.30, "Stealth",              " blk"),
+            new StatDef("stealth",              PuffishAttributes.STEALTH,              0.30, 1.00, "Stealth",              " blk"),
             new StatDef("sprinting_speed",      PuffishAttributes.SPRINTING_SPEED,      0.03, 0.10, "Sprint Speed",         "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE)
         ));
         return List.copyOf(pool);
