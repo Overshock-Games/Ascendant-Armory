@@ -25,28 +25,38 @@ public final class ItemLevelOverlayHandler {
         int level = GearHelper.getLevel(stack);
         if (level <= 0) return;
 
-        drawBorder(graphics, x, y, level);
+        drawCornerMarker(graphics, x, y, level);
     }
 
-    // Draws a 1-px border + a faded 2-px outer glow on the 16x16 slot region.
-    private static void drawBorder(GuiGraphicsExtractor g, int x, int y, int level) {
-        int solid = levelColor(level, 0xCC);
-        int glow  = levelColor(level, 0x44);
+    private static void drawCornerMarker(GuiGraphicsExtractor g, int x, int y, int level) {
+        int highlight = levelColor(level, 0xE8);
+        int color = levelColor(level, 0xC8);
+        int mid = darkLevelColor(level, 0xB8, 0.72F);
+        int dark = darkLevelColor(level, 0xB8, 0.42F);
+        int shade = 0x90000000;
 
-        int r = x + 16;
-        int b = y + 16;
+        drawTopLeftTriangle(g, x, y, highlight, color, mid, dark, shade);
+    }
 
-        // outer glow (2px outside)
-        g.fill(x - 2, y - 2, r + 2, y - 1, glow);
-        g.fill(x - 2, b + 1, r + 2, b + 2, glow);
-        g.fill(x - 2, y - 1, x - 1, b + 1, glow);
-        g.fill(r + 1,  y - 1, r + 2, b + 1, glow);
+    private static void drawTopLeftTriangle(
+            GuiGraphicsExtractor g,
+            int x,
+            int y,
+            int highlight,
+            int color,
+            int mid,
+            int dark,
+            int shade) {
+        g.fill(x, y, x + 5, y + 1, shade);
+        g.fill(x, y + 1, x + 4, y + 2, shade);
+        g.fill(x, y + 2, x + 3, y + 3, shade);
+        g.fill(x, y + 3, x + 2, y + 4, shade);
 
-        // inner glow / border (1px)
-        g.fill(x - 1, y - 1, r + 1, y,     solid);
-        g.fill(x - 1, b,     r + 1, b + 1, solid);
-        g.fill(x - 1, y,     x,     b,     solid);
-        g.fill(r,     y,     r + 1, b,     solid);
+        g.fill(x, y, x + 5, y + 1, highlight);
+        g.fill(x, y + 1, x + 4, y + 2, color);
+        g.fill(x, y + 2, x + 3, y + 3, mid);
+        g.fill(x, y + 3, x + 2, y + 4, dark);
+        g.fill(x, y + 4, x + 1, y + 5, shade);
     }
 
     private static int levelColor(int level, int alpha) {
@@ -58,5 +68,13 @@ public final class ItemLevelOverlayHandler {
             default -> 0xFF5555;
         };
         return (alpha << 24) | rgb;
+    }
+
+    private static int darkLevelColor(int level, int alpha, float brightness) {
+        int color = levelColor(level, alpha);
+        int r = (int) (((color >> 16) & 0xFF) * brightness);
+        int g = (int) (((color >> 8) & 0xFF) * brightness);
+        int b = (int) ((color & 0xFF) * brightness);
+        return (alpha << 24) | (r << 16) | (g << 8) | b;
     }
 }

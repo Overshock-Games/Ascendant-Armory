@@ -185,8 +185,8 @@ public final class AscensionCoresConfig {
                 upgradeCoreCostLevel3=%d
                 upgradeCoreCostLevel4=%d
                 upgradeCoreCostLevel5=%d
-                # If true, leveled gear shows colored corner brackets in the inventory grid:
-                # one bracket per ascension level, color-coded by tier.
+                # If true, leveled gear shows a small color-coded corner marker
+                # in the inventory grid.
                 showInventoryLevelMarkers=%s
                 # If true, anvil upgrade/reroll plays an audio cue on success.
                 playAnvilFeedback=%s
