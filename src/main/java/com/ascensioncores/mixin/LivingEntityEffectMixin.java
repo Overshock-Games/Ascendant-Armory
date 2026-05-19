@@ -17,10 +17,10 @@ public abstract class LivingEntityEffectMixin {
         if (effect == null || effect.getEffect() == null) return effect;
         
         LivingEntity entity = (LivingEntity) (Object) this;
-        double tenacity = GearHelper.getScaledArmorStatAmount(entity, "tenacity");
+        double effectResist = GearHelper.getScaledArmorStatAmount(entity, "effect_resist");
         
-        if (tenacity > 0.0 && effect.getEffect().value().getCategory() == net.minecraft.world.effect.MobEffectCategory.HARMFUL) {
-            int newDuration = (int) (effect.getDuration() * Math.max(0.1, 1.0 - tenacity));
+        if (effectResist > 0.0 && effect.getEffect().value().getCategory() == net.minecraft.world.effect.MobEffectCategory.HARMFUL) {
+            int newDuration = (int) (effect.getDuration() * Math.max(0.1, 1.0 - effectResist));
             return new MobEffectInstance(
                 effect.getEffect(), newDuration, effect.getAmplifier(), 
                 effect.isAmbient(), effect.isVisible(), effect.showIcon()

@@ -106,7 +106,6 @@ public final class StatPool {
             new StatDef("critical_damage",      null,                                   0.10, 0.25, "Critical Damage",      "%"),
             new StatDef("execution_damage",     null,                                   0.08, 0.18, "Execution Damage",     "%"),
             new StatDef("ambush_damage",        null,                                   0.08, 0.18, "Ambush Damage",        "%"),
-            new StatDef("frostbite",            null,                                   0.03, 0.10, "Frostbite",            "%"),
             new StatDef("venom",                null,                                   0.03, 0.10, "Venom",                "%"),
             new StatDef("shock",                null,                                   0.03, 0.10, "Shock",                "%"),
             new StatDef("sprinting_speed",      PuffishAttributes.SPRINTING_SPEED,      0.03, 0.10, "Sprint Speed",         "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
@@ -126,11 +125,11 @@ public final class StatPool {
         List<StatDef> pool = new ArrayList<>(List.of(
             new StatDef("evasion",              null,                                   0.005,0.02, "Evasion",              "%"),
             new StatDef("deflection",           null,                                   0.01, 0.04, "Deflection",           "%"),
-            new StatDef("tenacity",             null,                                   0.04, 0.10, "Tenacity",             "%"),
+            new StatDef("effect_resist",        null,                                   0.04, 0.10, "Effect Resist",        "%"),
             new StatDef("melee_resistance",     null,                                   0.02, 0.06, "Melee Resistance",     "%"),
             new StatDef("natural_regeneration", PuffishAttributes.NATURAL_REGENERATION, 0.05, 0.20, "Natural Regeneration", "%"),
             new StatDef("low_health_guard",     null,                                   0.05, 0.12, "Low Health Guard",     "%"),
-            new StatDef("steady_guard",         null,                                   0.04, 0.10, "Steady Guard",         "%"),
+            new StatDef("sneak_guard",          null,                                   0.04, 0.10, "Sneak Guard",          "%"),
             new StatDef("sprinting_speed",      PuffishAttributes.SPRINTING_SPEED,      0.03, 0.10, "Sprint Speed",         "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
             new StatDef("consuming_speed",      PuffishAttributes.CONSUMING_SPEED,      0.03, 0.10, "Consuming Speed",      "%"),
             new StatDef("repair_discount",      PuffishAttributes.REPAIR_COST,         -0.15,-0.05, "Repair Discount",      "%"),
@@ -140,8 +139,8 @@ public final class StatPool {
             new StatDef("experience_bonus",     PuffishAttributes.EXPERIENCE,           0.05, 0.20, "Experience Bonus",     "%"),
             new StatDef("jump",                 PuffishAttributes.JUMP,                 0.05, 0.20, "Jump Height",          "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
             new StatDef("emergency_healing",    null,                                   0.02, 0.05, "Emergency Healing",    "%"),
-            new StatDef("bulwark",              null,                                   0.05, 0.15, "Bulwark",              "%"),
-            new StatDef("vigor",                Attributes.MAX_HEALTH,                  0.20, 0.60, "Vigor",                " HP")
+            new StatDef("standstill_guard",     null,                                   0.05, 0.15, "Standstill Guard",     "%"),
+            new StatDef("max_health",           Attributes.MAX_HEALTH,                  0.20, 0.60, "Max Health",           " HP")
         ));
         return List.copyOf(pool);
     }

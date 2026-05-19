@@ -44,14 +44,14 @@ public abstract class LivingEntityDamageMixin {
             amount *= (float) (1.0 - Math.min(lastStand, 0.60));
         }
 
-        double steadyGuard = GearHelper.getScaledArmorStatAmount(entity, "steady_guard");
-        if (steadyGuard > 0.0 && entity.isShiftKeyDown()) {
-            amount *= (float) (1.0 - Math.min(steadyGuard, 0.50));
+        double sneakGuard = GearHelper.getScaledArmorStatAmount(entity, "sneak_guard");
+        if (sneakGuard > 0.0 && entity.isShiftKeyDown()) {
+            amount *= (float) (1.0 - Math.min(sneakGuard, 0.50));
         }
 
-        double bulwark = GearHelper.getScaledArmorStatAmount(entity, "bulwark");
-        if (bulwark > 0.0 && entity.getDeltaMovement().horizontalDistanceSqr() < 0.001) {
-            amount *= (float) (1.0 - Math.min(bulwark, 0.50));
+        double standstillGuard = GearHelper.getScaledArmorStatAmount(entity, "standstill_guard");
+        if (standstillGuard > 0.0 && entity.getDeltaMovement().horizontalDistanceSqr() < 0.001) {
+            amount *= (float) (1.0 - Math.min(standstillGuard, 0.50));
         }
 
         boolean isMelee = source.getDirectEntity() instanceof LivingEntity

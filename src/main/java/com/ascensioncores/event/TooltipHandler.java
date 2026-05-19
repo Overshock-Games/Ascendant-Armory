@@ -106,7 +106,7 @@ public final class TooltipHandler {
             return String.format("+%.1f%%", value * 100.0);
         } else if (id.equals("repair_discount")) {
             return String.format("%.1f%% Discount", Math.abs(value) * 100.0);
-        } else if (id.equals("low_health_guard") || id.equals("steady_guard") || id.equals("bulwark") || id.equals("melee_resistance")) {
+        } else if (id.equals("low_health_guard") || id.equals("sneak_guard") || id.equals("standstill_guard") || id.equals("melee_resistance")) {
             return String.format("+%.1f%% Damage Reduction", value * 100.0);
         } else if (id.equals("emergency_healing")) {
             return String.format("+%.1f%% Max Health", value * 100.0);
@@ -172,17 +172,17 @@ public final class TooltipHandler {
             case "overcharge_damage"    -> 0xFFEE00;
             case "evasion"              -> 0x88FFDD;
             case "deflection"           -> 0xAAAAFF;
-            case "tenacity"             -> 0xFFAA55;
+            case "effect_resist"        -> 0xFFAA55;
             case "melee_resistance"     -> 0xBBBBBB;
             case "natural_regeneration" -> 0x66FF88;
             case "low_health_guard"     -> 0xFF8844;
-            case "steady_guard"         -> 0xC0C0C0;
+            case "sneak_guard"          -> 0xC0C0C0;
             case "consuming_speed"      -> 0xFFDD66;
             case "tamed_resistance"     -> 0xDDFFAA;
             case "stamina"              -> 0x66FFCC;
             case "emergency_healing"    -> 0xFF88BB;
-            case "bulwark"              -> 0xAAAAAA;
-            case "vigor"                -> 0xFF2244;
+            case "standstill_guard"     -> 0xAAAAAA;
+            case "max_health"           -> 0xFF2244;
             default                     -> 0x2BBBCC;
         };
     }

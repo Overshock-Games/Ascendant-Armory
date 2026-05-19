@@ -72,10 +72,12 @@ public abstract class ProjectileDamageMixin {
             target.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.SLOWNESS, 60, 1));
         }
 
-        double pinning = GearHelper.getScaledStatAmount(weapon, "pinning")
-            + GearHelper.getScaledEquippedArtifactStatAmount(player, "pinning");
-        if (pinning > 0.0 && Math.random() < pinning) {
-            target.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.SLOWNESS, 20, 4));
+        if (isCrit) {
+            double pinning = GearHelper.getScaledStatAmount(weapon, "pinning")
+                + GearHelper.getScaledEquippedArtifactStatAmount(player, "pinning");
+            if (pinning > 0.0 && Math.random() < pinning) {
+                target.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.SLOWNESS, 40, 6));
+            }
         }
 
         double venom = GearHelper.getScaledStatAmount(weapon, "venom") + GearHelper.getScaledEquippedArtifactStatAmount(player, "venom");
