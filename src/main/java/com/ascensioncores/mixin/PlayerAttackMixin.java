@@ -68,9 +68,9 @@ public abstract class PlayerAttackMixin {
                 amount *= (float) (1.0 + executeBonus);
             }
 
-            double duelistBonus = GearHelper.getScaledStatAmount(weapon, "opening_damage");
-            if (duelistBonus > 0.0 && livingTarget.getHealth() >= livingTarget.getMaxHealth() * 0.99f) {
-                amount *= (float) (1.0 + duelistBonus);
+            double openingBonus = GearHelper.getScaledStatAmount(weapon, "opening_damage");
+            if (openingBonus > 0.0 && livingTarget.getHealth() >= livingTarget.getMaxHealth() * 0.99f) {
+                amount *= (float) (1.0 + openingBonus);
             }
 
             int momentumHits = TraitState.getMomentumHits(player.getUUID(), livingTarget.getUUID());

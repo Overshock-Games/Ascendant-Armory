@@ -53,10 +53,10 @@ public abstract class ProjectileDamageMixin {
             amount *= (float) (1.0 + executeBonus);
         }
 
-        double duelistBonus = GearHelper.getScaledStatAmount(weapon, "opening_damage")
+        double openingBonus = GearHelper.getScaledStatAmount(weapon, "opening_damage")
             + GearHelper.getScaledEquippedArtifactStatAmount(player, "opening_damage");
-        if (duelistBonus > 0.0 && target.getHealth() >= target.getMaxHealth() * 0.99f) {
-            amount *= (float) (1.0 + duelistBonus);
+        if (openingBonus > 0.0 && target.getHealth() >= target.getMaxHealth() * 0.99f) {
+            amount *= (float) (1.0 + openingBonus);
         }
 
         if (directEntity instanceof Arrow arrow && arrow.isCritArrow()) {
