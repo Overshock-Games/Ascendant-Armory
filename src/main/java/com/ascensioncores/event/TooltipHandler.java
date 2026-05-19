@@ -95,8 +95,12 @@ public final class TooltipHandler {
             return String.format("+%.1f%% Chance", value * 100.0);
         } else if (id.equals("life_steal")) {
             return String.format("+%.1f%%", value * 100.0);
-        } else if (id.equals("repair_cost")) {
+        } else if (id.equals("repair_discount")) {
             return String.format("%.1f%% Discount", Math.abs(value) * 100.0);
+        } else if (id.equals("low_health_guard") || id.equals("steady_guard") || id.equals("bulwark")) {
+            return String.format("+%.1f%% Damage Reduction", value * 100.0);
+        } else if (id.equals("emergency_healing")) {
+            return String.format("+%.1f%% Max Health", value * 100.0);
         } else if (id.equals("reach") || id.equals("stealth")) {
             return String.format("+%.2f Blocks", value);
         }
@@ -140,9 +144,9 @@ public final class TooltipHandler {
             case "attack_speed"         -> 0xFFAA00;
             case "armor_shred"          -> 0xFF7755;
             case "toughness_shred"      -> 0xDD8866;
-            case "experience"           -> 0x55FF55;
+            case "experience_bonus"     -> 0x55FF55;
             case "critical_damage"      -> 0xFF55FF;
-            case "execute_damage"       -> 0xFF3333;
+            case "execution_damage"     -> 0xFF3333;
             case "ambush_damage"        -> 0x7777FF;
             case "frostbite"            -> 0x55FFFF;
             case "venom"                -> 0x55FF55;
@@ -150,8 +154,8 @@ public final class TooltipHandler {
             case "sprinting_speed"      -> 0x55FFAA;
             case "stealth"              -> 0x8888AA;
             case "jump"                 -> 0xAAFF55;
-            case "repair_cost"          -> 0x66CCAA;
-            case "duelist_damage"       -> 0xFFD700;
+            case "repair_discount"      -> 0x66CCAA;
+            case "opening_damage"       -> 0xFFD700;
             case "wither"               -> 0x7F00FF;
             case "momentum"             -> 0xFF8C00;
             case "grievous"             -> 0xCC2200;
@@ -162,13 +166,12 @@ public final class TooltipHandler {
             case "tenacity"             -> 0xFFAA55;
             case "melee_resistance"     -> 0xBBBBBB;
             case "natural_regeneration" -> 0x66FF88;
-            case "last_stand_guard"     -> 0xFF8844;
+            case "low_health_guard"     -> 0xFF8844;
             case "steady_guard"         -> 0xC0C0C0;
             case "consuming_speed"      -> 0xFFDD66;
             case "tamed_resistance"     -> 0xDDFFAA;
             case "stamina"              -> 0x66FFCC;
-            case "retaliation"          -> 0xFF3300;
-            case "second_wind"          -> 0xFF88BB;
+            case "emergency_healing"    -> 0xFF88BB;
             case "bulwark"              -> 0xAAAAAA;
             case "vigor"                -> 0xFF2244;
             default                     -> 0x2BBBCC;

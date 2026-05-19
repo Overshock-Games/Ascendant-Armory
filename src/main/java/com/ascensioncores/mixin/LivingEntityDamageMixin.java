@@ -8,7 +8,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -16,9 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityDamageMixin {
-
-    @Unique
-    private static boolean ascensioncores$retaliating = false;
 
     @ModifyVariable(method = "hurtServer", at = @At("HEAD"), argsOnly = true, ordinal = 0)
     private float ascensioncores$applyCustomArmorStats(float amount, ServerLevel level, DamageSource source) {
@@ -43,7 +39,7 @@ public abstract class LivingEntityDamageMixin {
             }
         }
 
-        double lastStand = GearHelper.getScaledArmorStatAmount(entity, "last_stand_guard");
+        double lastStand = GearHelper.getScaledArmorStatAmount(entity, "low_health_guard");
         if (lastStand > 0.0 && entity.getHealth() / entity.getMaxHealth() <= 0.35f) {
             amount *= (float) (1.0 - Math.min(lastStand, 0.60));
         }
@@ -58,17 +54,6 @@ public abstract class LivingEntityDamageMixin {
             amount *= (float) (1.0 - Math.min(bulwark, 0.50));
         }
 
-        if (!ascensioncores$retaliating && !(source.getDirectEntity() instanceof Projectile)
-                && source.getEntity() instanceof LivingEntity attacker && attacker != entity) {
-            double retaliation = GearHelper.getScaledArmorStatAmount(entity, "retaliation");
-            if (retaliation > 0.0) {
-                float retDamage = amount * (float) Math.min(retaliation, 0.50);
-                ascensioncores$retaliating = true;
-                attacker.hurtServer(level, level.damageSources().thorns(entity), retDamage);
-                ascensioncores$retaliating = false;
-            }
-        }
-
         return amount;
     }
 
@@ -77,7 +62,7 @@ public abstract class LivingEntityDamageMixin {
         if (!cir.getReturnValueZ()) return;
         LivingEntity entity = (LivingEntity) (Object) this;
         if (entity.getHealth() <= 0) return;
-        double secondWind = GearHelper.getScaledArmorStatAmount(entity, "second_wind");
+        double secondWind = GearHelper.getScaledArmorStatAmount(entity, "emergency_healing");
         if (secondWind <= 0.0) return;
         if (entity.getHealth() / entity.getMaxHealth() <= 0.30f) {
             if (TraitState.trySecondWind(entity.getUUID(), 30_000L)) {

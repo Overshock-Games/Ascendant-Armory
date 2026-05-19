@@ -63,12 +63,12 @@ public abstract class PlayerAttackMixin {
         }
 
         if (target instanceof LivingEntity livingTarget) {
-            double executeBonus = GearHelper.getScaledStatAmount(weapon, "execute_damage");
+            double executeBonus = GearHelper.getScaledStatAmount(weapon, "execution_damage");
             if (executeBonus > 0.0 && livingTarget.getHealth() / livingTarget.getMaxHealth() <= 0.35f) {
                 amount *= (float) (1.0 + executeBonus);
             }
 
-            double duelistBonus = GearHelper.getScaledStatAmount(weapon, "duelist_damage");
+            double duelistBonus = GearHelper.getScaledStatAmount(weapon, "opening_damage");
             if (duelistBonus > 0.0 && livingTarget.getHealth() >= livingTarget.getMaxHealth() * 0.99f) {
                 amount *= (float) (1.0 + duelistBonus);
             }
