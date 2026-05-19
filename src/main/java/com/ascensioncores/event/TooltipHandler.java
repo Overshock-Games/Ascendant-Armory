@@ -30,7 +30,7 @@ public final class TooltipHandler {
 
         if (stack.is(ModItems.ASCENSION_CORE)) {
             lines.add(Component.literal("Use in an anvil to level up/ascend gear.").withStyle(ChatFormatting.GRAY));
-            lines.add(Component.literal("Each level adds a new trait, up to the item's capacity and enhanced existing traits.").withStyle(ChatFormatting.DARK_GRAY));
+            lines.add(Component.literal("Each level adds a new trait and enhances existing traits.").withStyle(ChatFormatting.DARK_GRAY));
             return;
         }
 

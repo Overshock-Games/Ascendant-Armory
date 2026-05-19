@@ -1,8 +1,5 @@
 # Ascension Cores
 
-![Hero banner](docs/images/banner.png)
-<!-- Suggested image: wide banner (1920x540ish) showing the mod logo + a row of glowing tier-colored gear (Honed white → Divine red), maybe a player wielding a Divine sword with particles. -->
-
 **ARPG gear progression for vanilla items.** Vanilla progression ends at netherite + max enchants. Every diamond sword you find is identical to the last, no god rolls, no reason to keep hunting. Most "RPG loot" mods solve this by adding hundreds of custom items, tiers, and rarities that fight with vanilla and every other mod you have installed.
 
 Ascension Cores does the opposite: your diamond sword stays a diamond sword. But now it can be *Honed*, *Empowered*, *Ascendant*, *Mythic*, or *Divine*, each tier earned at the anvil, each tier adding a randomly-rolled trait. Deep late-game progression and build crafting without breaking anything else.
@@ -14,28 +11,13 @@ Ascension Cores does the opposite: your diamond sword stays a diamond sword. But
 
 ---
 
-## How to get cores
-
-- **Crafting**: Both Ascension and Chaos Cores have crafting recipes (see in-game JEI / wiki).
-- **Mob drops**: Hostile mobs drop cores at tiered rates, basic mobs, mid-tier mobs (wither skeletons, blazes), and bosses each in their own bracket.
-- **Chest loot**: Generates in dungeon, fortress, mineshaft, end city, and ancient city chests.
-- **Pre-ascended loot** (optional): Vanilla dungeon weapons can spawn already leveled, ready to use.
-
-All drop rates and weights configurable in `config/ascensioncores.properties`.
-
-![Ascension and Chaos cores](docs/images/cores.png)
-<!-- Suggested image: side-by-side close-up of Ascension Core (blue gem) and Chaos Core item icons with tooltips. -->
-
----
-
 ## How it works
 
 ### Cores
 - **Ascension Core**: Use in an anvil to level up gear. Each level adds a trait + enchantment slot and powers up existing traits.
 - **Chaos Core**: Use in an anvil to reroll the weakest traits on leveled gear. Stack more cores to reroll more at once.
 
-![Anvil flow](docs/images/anvil-upgrade.png)
-<!-- Suggested image: anvil GUI: Diamond Sword + Ascension Cores → "Empowered Diamond Sword" with new trait. -->
+![Ascension and Chaos cores](https://cdn.modrinth.com/data/cached_images/b774ebc3efc40c416fc25d93889a49b83b4335d4.png)
 
 ### Tiers
 | Tier | Name | Trait slots | Enchant slots |
@@ -48,8 +30,8 @@ All drop rates and weights configurable in `config/ascensioncores.properties`.
 
 Trait slot count is also capped by material (wood = 1, iron = 3, diamond = 4, netherite = 5). Smithing-upgrade your gear and the new slot auto-fills with a fresh trait.
 
-![Tier progression](docs/images/tier-progression.png)
-<!-- Suggested image: same Diamond Sword shown at L1 through L5, each tier's colored name visible. -->
+![Tiered Diamond Weapons](https://cdn.modrinth.com/data/cached_images/3be44c96fc36844c08b333f75c4043f10bddc712.png)
+![Anvil Upgrade Preview](https://cdn.modrinth.com/data/cached_images/b8aa01b81c3f673ed8d8eb268d1a7d10dee9eb96.png)
 
 ### Trait ranks
 Traits are ordered by power: first trait scales 5x at L5, second 4x, etc. A god-roll = chasing the right primary trait. Use Chaos Cores to reroll the weak ones at the bottom.
@@ -57,26 +39,25 @@ Traits are ordered by power: first trait scales 5x at L5, second 4x, etc. A god-
 ### Trait donation
 Combine two of the same item in an anvil to transfer a trait. Surgical alternative to chaos rerolling.
 
-![Trait donation](docs/images/trait-donation.png)
-<!-- Suggested image: anvil with two diamond swords, result tooltip showing new trait added. -->
-
 ### Visual feedback
 Tier-colored inventory badges, equipped item particle auras, detailed tooltips with trait values + next-level preview + cost-to-level.
 
-![Tooltip + inventory](docs/images/tooltip-example.png)
-<!-- Suggested image: hovered Divine sword tooltip + inventory with multiple tier-marked items visible. -->
+---
 
-![Equipped aura](docs/images/equipped-aura.gif)
-<!-- Suggested image: short GIF of player wearing Divine armor with orbiting tier-colored particles. -->
+## How to get cores
+
+- **Crafting**: Both Ascension and Chaos Cores have crafting recipes (see in-game JEI / wiki).
+- **Mob drops**: Hostile mobs drop cores at tiered rates, basic mobs, mid-tier mobs (wither skeletons, blazes), and bosses each in their own bracket.
+- **Chest loot**: Generates in dungeon, fortress, mineshaft, end city, and ancient city chests.
+- **Pre-ascended loot** (optional): Vanilla dungeon weapons can spawn already leveled, ready to use.
+
+All drop rates and weights configurable in `config/ascensioncores.properties`.
 
 ---
 
 ## Traits
 
 Every proc-based trait has its own particle effect and sound.
-
-![Trait procs](docs/images/trait-procs.gif)
-<!-- Suggested image: GIF montage of trait procs - frostbite snowflakes, shock sparks, wither smoke, heal suppress dark dust. -->
 
 <details>
 <summary><b>Full trait list (click to expand)</b></summary>
@@ -166,10 +147,6 @@ Every proc-based trait has its own particle effect and sound.
 </details>
 
 ---
-
-## Wiki
-
-Recipes, drop tables, full config reference, advanced build strategies (link coming soon).
 
 ## License
 

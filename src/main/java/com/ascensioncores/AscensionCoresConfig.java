@@ -243,7 +243,7 @@ public final class AscensionCoresConfig {
                 #   natural_regeneration, low_health_guard, sneak_guard, sprinting_speed,
                 #   consuming_speed, repair_discount, stealth, tamed_resistance, stamina, experience_bonus, jump,
                 #   emergency_healing, standstill_guard, max_health
-                # Tool traits:    experience_bonus, repair_discount, consuming_speed, jump,
+                # Tool traits:    experience_bonus, repair_discount, jump,
                 #   natural_regeneration, stamina, stealth, sprinting_speed
                 disabledWeaponTraits=%s
                 disabledRangedTraits=%s

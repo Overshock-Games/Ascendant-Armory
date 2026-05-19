@@ -133,7 +133,7 @@ public final class StatPool {
             new StatDef("sprinting_speed",      PuffishAttributes.SPRINTING_SPEED,      0.03, 0.10, "Sprint Speed",         "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
             new StatDef("consuming_speed",      PuffishAttributes.CONSUMING_SPEED,      0.03, 0.10, "Consuming Speed",      "%"),
             new StatDef("repair_discount",      PuffishAttributes.REPAIR_COST,         -0.15,-0.05, "Repair Discount",      "%"),
-            new StatDef("stealth",              PuffishAttributes.STEALTH,              0.10, 0.30, "Stealth",              " blk"),
+            new StatDef("stealth",              PuffishAttributes.STEALTH,              0.30, 1.00, "Stealth",              " blk"),
             new StatDef("tamed_resistance",     PuffishAttributes.TAMED_RESISTANCE,     0.10, 0.30, "Tamed Resistance",     " DMG"),
             new StatDef("stamina",              PuffishAttributes.STAMINA,              0.20, 0.60, "Stamina",              " pts"),
             new StatDef("experience_bonus",     PuffishAttributes.EXPERIENCE,           0.05, 0.20, "Experience Bonus",     "%"),
@@ -149,7 +149,6 @@ public final class StatPool {
         List<StatDef> pool = new ArrayList<>(List.of(
             new StatDef("experience_bonus",     PuffishAttributes.EXPERIENCE,           0.05, 0.20, "Experience Bonus",     "%"),
             new StatDef("repair_discount",      PuffishAttributes.REPAIR_COST,         -0.15,-0.05, "Repair Discount",      "%"),
-            new StatDef("consuming_speed",      PuffishAttributes.CONSUMING_SPEED,      0.03, 0.10, "Consuming Speed",      "%"),
             new StatDef("jump",                 PuffishAttributes.JUMP,                 0.05, 0.20, "Jump Height",          "%", AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
             new StatDef("natural_regeneration", PuffishAttributes.NATURAL_REGENERATION, 0.05, 0.20, "Natural Regeneration", "%"),
             new StatDef("stamina",              PuffishAttributes.STAMINA,              0.20, 0.60, "Stamina",              " pts"),
