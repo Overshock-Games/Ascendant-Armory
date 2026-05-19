@@ -1,148 +1,175 @@
 # Ascension Cores
 
-An ARPG-style gear progression system for Minecraft. Turn any sword, bow, armor, or tool into a leveled, trait-rolling piece of loot. No new gear tiers, no replacing your favorite enchanted diamond sword. Just deeper, build-craftable progression on the gear you already use.
+![Hero banner](docs/images/banner.png)
+<!-- Suggested image: wide banner (1920x540ish) showing the mod logo + a row of glowing tier-colored gear (Honed white → Divine red), maybe a player wielding a Divine sword with particles. -->
+
+**ARPG gear progression for vanilla items.** Vanilla progression ends at netherite + max enchants. Every diamond sword you find is identical to the last, no god rolls, no reason to keep hunting. Most "RPG loot" mods solve this by adding hundreds of custom items, tiers, and rarities that fight with vanilla and every other mod you have installed.
+
+Ascension Cores does the opposite: your diamond sword stays a diamond sword. But now it can be *Honed*, *Empowered*, *Ascendant*, *Mythic*, or *Divine*, each tier earned at the anvil, each tier adding a randomly-rolled trait. Deep late-game progression and build crafting without breaking anything else.
+
+- 5 ascension tiers (*Honed* → *Divine*), each adds a trait slot + enchantment slot
+- 30+ traits across weapon, ranged, armor, tool pools
+- Trait donation, deterministic anvil rerolls, smithing-aware trait fill
+- Vanilla-friendly: doesn't add gear, doesn't replace enchants, doesn't fight other mods
 
 ---
 
-## Why this mod exists
+## How to get cores
 
-Vanilla gear progression ends at netherite + max enchantments. Once you have it, every diamond/netherite item you find is identical to every other one. There's no reason to compare two diamond swords, no reason to chase a "god roll," no reason for late-game gear hunting.
+- **Crafting**: Both Ascension and Chaos Cores have crafting recipes (see in-game JEI / wiki).
+- **Mob drops**: Hostile mobs drop cores at tiered rates, basic mobs, mid-tier mobs (wither skeletons, blazes), and bosses each in their own bracket.
+- **Chest loot**: Generates in dungeon, fortress, mineshaft, end city, and ancient city chests.
+- **Pre-ascended loot** (optional): Vanilla dungeon weapons can spawn already leveled, ready to use.
 
-Most "RPG loot" mods solve this by adding hundreds of new items, custom tiers, custom rarities, and they fight with vanilla, with enchantments, and with every other gear mod you have installed. Ascension Cores takes the opposite approach: vanilla gear stays vanilla. Your diamond sword is still a diamond sword. But now it can be *Honed*, *Empowered*, *Ascendant*, *Mythic*, or *Divine*, each tier earned by spending a currency on the anvil, each tier adding a new randomly-rolled trait from a deep pool of melee, ranged, armor, and tool effects.
+All drop rates and weights configurable in `config/ascensioncores.properties`.
 
-The goal: meaningful late-game progression and build crafting, without breaking anything else.
+![Ascension and Chaos cores](docs/images/cores.png)
+<!-- Suggested image: side-by-side close-up of Ascension Core (blue gem) and Chaos Core item icons with tooltips. -->
 
 ---
 
-## What it does
+## How it works
 
 ### Cores
-- **Ascension Core**: Use in an anvil to level up gear. Each level adds a new trait slot and powers up existing traits.
+- **Ascension Core**: Use in an anvil to level up gear. Each level adds a trait + enchantment slot and powers up existing traits.
 - **Chaos Core**: Use in an anvil to reroll the weakest traits on leveled gear. Stack more cores to reroll more at once.
 
-### Gear tiers
-Any sword, axe, bow, crossbow, trident, spear, mace, armor piece, shield, or tool can be leveled. Each tier scales the item's traits and unlocks a new one:
+![Anvil flow](docs/images/anvil-upgrade.png)
+<!-- Suggested image: anvil GUI: Diamond Sword + Ascension Cores → "Empowered Diamond Sword" with new trait. -->
 
-| Tier | Name |
-|------|------|
-| 1 | Honed |
-| 2 | Empowered |
-| 3 | Ascendant |
-| 4 | Mythic |
-| 5 | Divine |
+### Tiers
+| Tier | Name | Trait slots | Enchant slots |
+|------|------|-------------|---------------|
+| 1 | Honed | 1 | 1 |
+| 2 | Empowered | 2 | 2 |
+| 3 | Ascendant | 3 | 3 |
+| 4 | Mythic | 4 | 4 |
+| 5 | Divine | 5 | 5 |
 
-### Material capacity
-The base material decides how many trait slots an item can hold. Wood/gold = 1, stone/copper/chainmail = 2, iron = 3, diamond = 4, netherite = 5. Upgrading the material in a smithing table automatically fills the new slot with a fresh trait, no need to re-level from scratch.
+Trait slot count is also capped by material (wood = 1, iron = 3, diamond = 4, netherite = 5). Smithing-upgrade your gear and the new slot auto-fills with a fresh trait.
+
+![Tier progression](docs/images/tier-progression.png)
+<!-- Suggested image: same Diamond Sword shown at L1 through L5, each tier's colored name visible. -->
 
 ### Trait ranks
-Traits are ordered by power: the first trait scales hardest with item level, the second a bit less, and so on. A *Divine* sword with 5 traits has one "primary" trait (5x scaling), a "secondary" (4x), etc. This rewards re-rolling for ideal trait order and opens build-crafting strategies.
-
-### Enchantment slots
-Each tier unlocks one enchantment slot. *Honed* gear can hold 1 enchantment, *Divine* gear can hold 5. The anvil enforces this cap when applying enchanted books, so you must keep leveling to fit a full Sharpness V + Unbreaking III + Mending + Looting III + Sweeping Edge build. Curses don't count against the limit.
+Traits are ordered by power: first trait scales 5x at L5, second 4x, etc. A god-roll = chasing the right primary trait. Use Chaos Cores to reroll the weak ones at the bottom.
 
 ### Trait donation
-Combine two of the same item (e.g., two leveled diamond swords) in an anvil to transfer a trait from one to the other. Perfect for filling specific slots without relying on random chaos rerolls.
+Combine two of the same item in an anvil to transfer a trait. Surgical alternative to chaos rerolling.
 
-### Trait pool
-The mod ships with dozens of traits across four pools (weapon, ranged, armor, tool). Every proc-based trait has its own particle effect and sound, so you can see and hear when your build is firing.
-
-**Damage shapers**
-- **Critical Damage**: extra damage on vanilla critical strikes (jump-attacks for melee, fully-drawn bow shots for ranged).
-- **Execution Damage**: extra damage when the target is below 35% HP. Snowball low-HP enemies.
-- **Ambush Damage**: extra damage when attacking from behind. Rewards positional play.
-- **Opening Damage**: extra damage on the first hit (target at near-full HP). Burst openers.
-- **Chain Damage** (melee): each consecutive hit on the same target adds bonus damage, up to 5 stacks. Resets if you switch targets.
-- **Overcharge Damage** (ranged): extra damage on fully-drawn bow shots.
-
-**On-hit procs**
-- **Frostbite** (melee only): chance to apply Slowness II for 3s. Sustained kiting.
-- **Venom**: chance to apply Poison II for 5s. Damage over time.
-- **Shock**: chance to apply Weakness for 3s. Weakens enemy melee.
-- **Wither**: chance to apply Wither for 4s. Black-damage DoT.
-- **Pinning** (ranged, full-draw only): chance to root the target in place with Slowness VII for 2s. Perfect setup for follow-up shots.
-- **Heal Suppress**: chance to halve all healing the target receives for 4s. Counters regen mobs and PvP healing.
-
-**Offensive utility**
-- **Life Steal**: % of damage dealt returns as healing.
-- **Reach** (melee): extends your attack reach in blocks.
-- **Attack Speed** (melee): faster swing recovery.
-- **Armor Shred**: temporarily reduces target's armor on hit.
-- **Toughness Shred**: temporarily reduces target's armor toughness.
-
-**Movement and economy**
-- **Sprint Speed**: faster sprint movement.
-- **Jump Height**: higher jumps.
-- **Stealth**: reduces the distance mobs detect you from.
-- **Repair Discount**: cheaper anvil repair costs.
-- **Experience Bonus**: more XP from kills and breaks.
-- **Consuming Speed**: eat and drink potions faster.
-- **Stamina**: increases sprint stamina (Puffish Attributes feature).
-
-**Defensive (armor)**
-- **Evasion**: small chance to fully dodge incoming hits.
-- **Deflection**: chance to reflect incoming projectiles back at the shooter.
-- **Effect Resist**: shortens duration of harmful status effects on you.
-- **Melee Resistance**: % damage reduction against melee hits (capped at 50%).
-- **Natural Regeneration**: heal faster while saturated.
-- **Max Health**: increases max HP.
-- **Low Health Guard**: damage reduction when you're below 35% HP.
-- **Sneak Guard**: damage reduction while sneaking.
-- **Standstill Guard**: damage reduction while standing still.
-- **Emergency Healing** (Second Wind): when a hit drops you below 30% HP, heal a % of your max HP. 30s cooldown.
-- **Tamed Resistance**: reduces damage from your own tamed mobs (rare niche, mostly for accidental wolves).
+![Trait donation](docs/images/trait-donation.png)
+<!-- Suggested image: anvil with two diamond swords, result tooltip showing new trait added. -->
 
 ### Visual feedback
-- **Inventory level marker**: a small tier-colored corner badge on every leveled item.
-- **Equipped item particle aura**: held items and worn armor emit subtle tier-colored particles.
-- **Detailed tooltip**: current trait values, next-level preview, "Awakens at L#" hints for sleeping traits, and live cost-to-level display.
+Tier-colored inventory badges, equipped item particle auras, detailed tooltips with trait values + next-level preview + cost-to-level.
 
-### Loot integration
-Ascension Cores and Chaos Cores drop from mobs (configurable rate) and generate in dungeon, fortress, mineshaft, end city, and ancient city chests. Mob drop rates scale with mob difficulty (zombie vs. wither skeleton vs. wither). Optional auto-leveled loot makes vanilla dungeon weapons spawn pre-ascended.
+![Tooltip + inventory](docs/images/tooltip-example.png)
+<!-- Suggested image: hovered Divine sword tooltip + inventory with multiple tier-marked items visible. -->
 
-### Commands
-- `/ascensioncores reload`: Reloads `config/ascensioncores.properties` live, no restart needed.
-- `/ascensioncores level <amount>`: Sets the ascension level of the held item (OP permission).
+![Equipped aura](docs/images/equipped-aura.gif)
+<!-- Suggested image: short GIF of player wearing Divine armor with orbiting tier-colored particles. -->
 
 ---
 
-## Mod compatibility
+## Traits
 
-### Required
-- **Fabric API**
-- **[Puffish Attributes](https://modrinth.com/mod/puffish-attributes)**: backbone for the custom attributes (lifesteal, sprint speed, stamina, etc.) used by many traits.
+Every proc-based trait has its own particle effect and sound.
 
-### Recommended (integrates automatically when present)
-- **[JEI](https://modrinth.com/mod/jei)**: recipe + item lookup for cores.
-- **[Progression Reborn](https://modrinth.com/mod/progression-reborn)**: tier-aware material capacity for its custom gear progression.
-- **[Artifacts](https://modrinth.com/mod/artifacts)**: equipped artifacts can roll traits and contribute to weapon/armor procs.
-- **[Farmer's Delight Refabricated](https://modrinth.com/mod/farmers-delight-refabricated)**: knives recognized as tools.
-- **[More Delight](https://modrinth.com/mod/more-delight)**: tools recognized.
+![Trait procs](docs/images/trait-procs.gif)
+<!-- Suggested image: GIF montage of trait procs - frostbite snowflakes, shock sparks, wither smoke, heal suppress dark dust. -->
 
-### Plays nicely with
-- **Enchantments**: Trait slots and enchantment slots are independent. Enchant your Divine sword normally; the anvil enforces an enchantment cap equal to the item's tier.
-- **Other gear mods**: Ascension Cores doesn't add or replace gear; it modifies existing items. Most modded weapons/armor are auto-detected via durability and attribute heuristics.
-- **Better Vanilla Mobs**, recipe overhauls, biome mods, etc.: no known conflicts.
+<details>
+<summary><b>Full trait list (click to expand)</b></summary>
+
+**Damage shapers**
+- **Critical Damage**: extra damage on vanilla crits.
+- **Execution Damage**: extra damage below 35% target HP.
+- **Ambush Damage**: extra damage from behind.
+- **Opening Damage**: extra damage on near-full HP target.
+- **Chain Damage** (melee): bonus per consecutive hit, up to 5 stacks.
+- **Overcharge Damage** (ranged): extra damage on full-draw shots.
+
+**On-hit procs**
+- **Frostbite** (melee): chance for Slowness II, 3s.
+- **Venom**: chance for Poison II, 5s.
+- **Shock**: chance for Weakness, 3s.
+- **Wither**: chance for Wither, 4s.
+- **Pinning** (ranged, full-draw): chance to root with Slowness VII, 2s.
+- **Heal Suppress**: chance to halve target healing, 4s.
+
+**Offensive utility**
+- **Life Steal**: % of damage returns as healing.
+- **Reach** (melee): extended attack range.
+- **Attack Speed** (melee): faster swing recovery.
+- **Armor Shred** / **Toughness Shred**: temporarily reduce target armor.
+
+**Movement & economy**
+- **Sprint Speed**, **Jump Height**, **Stealth**, **Repair Discount**, **Experience Bonus**, **Consuming Speed**, **Stamina**.
+
+**Defensive (armor)**
+- **Evasion**: dodge chance.
+- **Deflection**: reflect projectiles.
+- **Effect Resist**: shorter debuff duration.
+- **Melee Resistance**: % damage reduction on melee hits (capped 50%).
+- **Natural Regeneration**: faster regen while saturated.
+- **Max Health**: more HP.
+- **Low Health Guard**: damage reduction below 35% HP.
+- **Sneak Guard**: damage reduction while sneaking.
+- **Standstill Guard**: damage reduction while still.
+- **Emergency Healing**: heal % max HP on near-death (30s cooldown).
+- **Tamed Resistance**: reduces damage from your own pets.
+
+</details>
 
 ---
 
-## Configuration
+## Compatibility
 
-All settings live in `config/ascensioncores.properties` and reload live with `/ascensioncores reload`:
+**Required**: Fabric API + [Puffish Attributes](https://modrinth.com/mod/puffish-attributes).
+
+<details>
+<summary><b>Optional integrations + plays-nice list (click to expand)</b></summary>
+
+**Auto-integrates when present:**
+- [JEI](https://modrinth.com/mod/jei) — recipe lookup.
+- [Progression Reborn](https://modrinth.com/mod/progression-reborn) — tier-aware material capacity.
+- [Artifacts](https://modrinth.com/mod/artifacts) — artifacts roll traits and contribute to procs.
+- [Better Vanilla Mobs](https://modrinth.com/mod/better-vanilla-mobs) — mob-tier-aware core drop rates.
+- [Farmer's Delight Refabricated](https://modrinth.com/mod/farmers-delight-refabricated) — knives recognized as tools.
+- [More Delight](https://modrinth.com/mod/more-delight) — tools recognized.
+
+**Plays nicely with:**
+- Enchantments (independent slot system, anvil enforces tier cap).
+- Other gear mods (auto-detects modded gear via durability + attribute heuristics).
+- Recipe overhauls, biome mods, etc., no known conflicts.
+
+</details>
+
+---
+
+## Commands & config
+
+- `/ascensioncores reload` — hot-reload config.
+- `/ascensioncores level <amount>` — set held item's level (OP).
+
+<details>
+<summary><b>Config options (click to expand)</b></summary>
+
+`config/ascensioncores.properties`:
 
 - Max item level (default 5)
-- XP and core costs per tier
-- Mob drop rates (chest loot, basic mobs, mid-tier mobs, boss mobs)
-- Per-pool trait blacklist (disable specific traits per weapon / ranged / armor / tool pool)
-- Inventory level marker toggle
-- Anvil feedback sound toggle
+- XP + core costs per tier
+- Mob/chest drop rates per tier
+- Per-pool trait blacklist
+- Inventory marker + anvil sound toggles
+
+</details>
 
 ---
 
 ## Wiki
 
-Recipes, full trait list, drop tables, and configuration reference live on the wiki (link coming soon).
-
----
+Recipes, drop tables, full config reference, advanced build strategies (link coming soon).
 
 ## License
 
