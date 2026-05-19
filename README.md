@@ -20,13 +20,13 @@ Ascension Cores does the opposite: your diamond sword stays a diamond sword. But
 ![Ascension and Chaos cores](https://cdn.modrinth.com/data/cached_images/b774ebc3efc40c416fc25d93889a49b83b4335d4.png)
 
 ### Tiers
-| Tier | Name | Trait slots | Enchant slots |
-|------|------|-------------|---------------|
-| 1 | Honed | 1 | 1 |
-| 2 | Empowered | 2 | 2 |
-| 3 | Ascendant | 3 | 3 |
-| 4 | Mythic | 4 | 4 |
-| 5 | Divine | 5 | 5 |
+| Level | Name | Trait slots | Enchant slots | Ascension Core Cost |
+|-------|------|-------------|---------------|---------------------|
+| 1 | Honed | 1 | 1 | 1 |
+| 2 | Empowered | 2 | 2 | 4 |
+| 3 | Ascendant | 3 | 3 | 16 |
+| 4 | Mythic | 4 | 4 | 32 |
+| 5 | Divine | 5 | 5 | 64 |
 
 Trait slot count is also capped by material (wood = 1, iron = 3, diamond = 4, netherite = 5). Smithing-upgrade your gear and the new slot auto-fills with a fresh trait.
 
