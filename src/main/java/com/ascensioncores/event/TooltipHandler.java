@@ -4,6 +4,8 @@ import com.ascensioncores.AscensionCoresConfig;
 import com.ascensioncores.gear.GearHelper;
 import com.ascensioncores.gear.RolledStat;
 import com.ascensioncores.gear.StatPool;
+import com.ascensioncores.gear.Curse;
+import com.ascensioncores.gear.Synergy;
 import com.ascensioncores.item.ModItems;
 import com.ascensioncores.mixin.AbstractContainerScreenAccessor;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
@@ -47,7 +49,7 @@ public final class TooltipHandler {
         int level = GearHelper.getLevel(stack);
         int capacity = Math.min(GearHelper.getMaterialCapacity(stack), GearHelper.getMaxLevel());
         List<RolledStat> stats = GearHelper.getRolledStats(stack);
-        boolean showNextLevelPreview = !suppressNextLevelPreview();
+        boolean showNextLevelPreview = showNextLevelPreview();
 
         if (level > 0 && !lines.isEmpty()) {
             Component original = lines.get(0);
@@ -64,6 +66,12 @@ public final class TooltipHandler {
 
         lines.add(Component.literal("  (" + stats.size() + "/" + capacity + " traits)")
             .withStyle(style -> style.withColor(levelColor(level))));
+
+        Curse curse = Curse.byId(stack.get(com.ascensioncores.component.ModComponents.CURSE));
+        if (curse != null) {
+            lines.add(Component.literal("  ☠ Cursed: " + curse.displayName() + " (" + curse.description() + ")")
+                .withStyle(ChatFormatting.DARK_RED));
+        }
 
         for (int i = 0; i < stats.size(); i++) {
             RolledStat rolled = stats.get(i);
@@ -86,11 +94,30 @@ public final class TooltipHandler {
                 display += " ➔ " + formatStatValue(def, rolled.id(), next);
             }
             lines.add(Component.literal(display).withStyle(style -> style.withColor(statColor(rolled.id()))));
+
+            for (Synergy syn : Synergy.involvingTrait(rolled.id())) {
+                boolean active = Synergy.activeOn(stack).stream().anyMatch(s -> s.id().equals(syn.id()));
+                StatPool.StatDef partnerDef = StatPool.getById(syn.partnerOf(rolled.id()));
+                String partner = partnerDef != null ? partnerDef.displayName() : "?";
+                if (active) {
+                    lines.add(Component.literal("    ✦ " + syn.displayName() + ": " + syn.description())
+                        .withStyle(style -> style.withColor(0xE0A040).withItalic(true)));
+                } else {
+                    lines.add(Component.literal("    ↳ pairs with " + partner)
+                        .withStyle(style -> style.withColor(0x666666).withItalic(true)));
+                }
+            }
         }
 
         if (AscensionCoresConfig.enableEnchantmentSlots) {
             lines.add(Component.literal("  Enchantment Slots: " + level)
                 .withStyle(ChatFormatting.DARK_PURPLE));
+        }
+
+        int kills = stack.getOrDefault(com.ascensioncores.component.ModComponents.KILLS, 0);
+        if (kills > 0) {
+            lines.add(Component.literal("  Kills: " + kills)
+                .withStyle(ChatFormatting.DARK_GRAY));
         }
 
         if (showNextLevelPreview && level < GearHelper.getMaxLevel()) {
@@ -118,7 +145,7 @@ public final class TooltipHandler {
         return StatPool.formatValue(def, value);
     }
 
-    private static boolean suppressNextLevelPreview() {
+    private static boolean showNextLevelPreview() {
         Minecraft client = Minecraft.getInstance();
         if (!(client.screen instanceof AbstractContainerScreen<?> screen)) return false;
         if (!(screen.getMenu() instanceof AnvilMenu anvilMenu)) return false;
@@ -126,13 +153,10 @@ public final class TooltipHandler {
         Slot hoveredSlot = ((AbstractContainerScreenAccessor) screen).ascensioncores$getHoveredSlot();
         if (hoveredSlot == null) return false;
 
-        // suppress on result slot always
-        if (hoveredSlot.index == anvilMenu.getResultSlot()) return true;
-
-        // suppress on left input when a chaos core is in right input (reroll, not upgrade)
+        // show preview only on the left input slot when an Ascension Core is in the right input
         if (hoveredSlot.index == 0) {
             ItemStack right = anvilMenu.getSlot(1).getItem();
-            return right.is(ModItems.CHAOS_CORE);
+            return right.is(ModItems.ASCENSION_CORE);
         }
         return false;
     }

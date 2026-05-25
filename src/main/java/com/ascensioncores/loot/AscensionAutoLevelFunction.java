@@ -51,13 +51,35 @@ public final class AscensionAutoLevelFunction extends LootItemConditionalFunctio
 
         double chance = treasure ? AscensionCoresConfig.treasureRandomLootAscensionChance : AscensionCoresConfig.randomLootAscensionChance;
         if (chance > 0 && context.getRandom().nextFloat() < chance) {
-            int targetLevel = 1;
-            while (targetLevel < maxPossible && context.getRandom().nextFloat() < 0.4f) {
-                targetLevel++;
-            }
-            GearHelper.setLevel(stack, targetLevel);
+            double q = treasure ? AscensionCoresConfig.treasureLootLevelBumpChance : AscensionCoresConfig.lootLevelBumpChance;
+            GearHelper.setLevel(stack, sampleTier(maxPossible, q, context.getRandom().nextFloat()));
         }
         return stack;
+    }
+
+    /**
+     * Truncated geometric sample: tier weight = q^(tier-1) normalized over
+     * {@code 1..max}. Consecutive tiers have a constant ratio of {@code q}, so
+     * one knob controls the whole curve without the catch-all pileup of the
+     * old loop-until-fail form.
+     */
+    private static int sampleTier(int max, double q, float roll) {
+        if (max <= 1 || q <= 0.0) return 1;
+        double sum = 0.0;
+        double w = 1.0;
+        for (int i = 0; i < max; i++) {
+            sum += w;
+            w *= q;
+        }
+        double target = roll * sum;
+        double acc = 0.0;
+        double weight = 1.0;
+        for (int i = 0; i < max; i++) {
+            acc += weight;
+            if (target < acc) return i + 1;
+            weight *= q;
+        }
+        return max;
     }
 
     private static final class Builder extends LootItemConditionalFunction.Builder<Builder> {

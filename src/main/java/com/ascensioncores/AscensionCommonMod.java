@@ -3,6 +3,7 @@ package com.ascensioncores;
 import com.ascensioncores.command.AscensionCoresCommand;
 import com.ascensioncores.component.ModComponents;
 import com.ascensioncores.event.EntityDeathHandler;
+import com.ascensioncores.event.KillCounterHandler;
 import com.ascensioncores.event.GearMigrationHandler;
 import com.ascensioncores.event.LootHandler;
 import com.ascensioncores.item.ModItems;
@@ -23,6 +24,7 @@ public final class AscensionCommonMod implements ModInitializer {
         ModLootConditions.register();
         GearMigrationHandler.register();
         EntityDeathHandler.register();
+        KillCounterHandler.register();
         LootHandler.register();
         AscensionCoresCommand.register();
     }

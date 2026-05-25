@@ -27,6 +27,9 @@ public final class AscensionCoresConfig {
     public static boolean enableSalvage = true;
     public static double salvageRefundPercent = 0.5;
     public static boolean chaosGambleMode = false;
+    public static boolean enableCurseTraits = true;
+    public static double curseChance = 0.10;
+    public static double curseTraitBoost = 1.5;
     public static int upgradeXpCostLevel1 = 2;
     public static int upgradeXpCostLevel2 = 4;
     public static int upgradeXpCostLevel3 = 6;
@@ -47,6 +50,8 @@ public final class AscensionCoresConfig {
     public static double treasureChaosCoreChance = 0.10;
     public static double randomLootAscensionChance = 0.40;
     public static double treasureRandomLootAscensionChance = 0.6;
+    public static double lootLevelBumpChance = 0.35;
+    public static double treasureLootLevelBumpChance = 0.50;
 
     public static Set<String> disabledWeaponTraits  = Set.of();
     public static Set<String> disabledRangedTraits  = Set.of();
@@ -97,6 +102,9 @@ public final class AscensionCoresConfig {
         enableSalvage = parseBoolean(props, "enableSalvage", enableSalvage, logger);
         salvageRefundPercent = parseDouble(props, "salvageRefundPercent", salvageRefundPercent, 0.0, 1.0, logger);
         chaosGambleMode = parseBoolean(props, "chaosGambleMode", chaosGambleMode, logger);
+        enableCurseTraits = parseBoolean(props, "enableCurseTraits", enableCurseTraits, logger);
+        curseChance = parseDouble(props, "curseChance", curseChance, 0.0, 1.0, logger);
+        curseTraitBoost = parseDouble(props, "curseTraitBoost", curseTraitBoost, 1.0, 5.0, logger);
         upgradeXpCostLevel1 = parseInt(props, "upgradeXpCostLevel1", upgradeXpCostLevel1, 0, 1000, logger);
         upgradeXpCostLevel2 = parseInt(props, "upgradeXpCostLevel2", upgradeXpCostLevel2, 0, 1000, logger);
         upgradeXpCostLevel3 = parseInt(props, "upgradeXpCostLevel3", upgradeXpCostLevel3, 0, 1000, logger);
@@ -120,8 +128,10 @@ public final class AscensionCoresConfig {
         treasureChaosCoreChance = parseDouble(props, "treasureChaosCoreChance", treasureChaosCoreChance, 0.0, 1.0, logger);
         randomLootAscensionChance = parseDouble(props, "randomLootAscensionChance", 
             parseDouble(props, "unenchantedLootAscensionChance", randomLootAscensionChance, 0.0, 1.0, logger), 0.0, 1.0, logger);
-        treasureRandomLootAscensionChance = parseDouble(props, "treasureRandomLootAscensionChance", 
+        treasureRandomLootAscensionChance = parseDouble(props, "treasureRandomLootAscensionChance",
             parseDouble(props, "treasureUnenchantedLootAscensionChance", treasureRandomLootAscensionChance, 0.0, 1.0, logger), 0.0, 1.0, logger);
+        lootLevelBumpChance = parseDouble(props, "lootLevelBumpChance", lootLevelBumpChance, 0.0, 1.0, logger);
+        treasureLootLevelBumpChance = parseDouble(props, "treasureLootLevelBumpChance", treasureLootLevelBumpChance, 0.0, 1.0, logger);
 
         enableBetterVanillaMobsIntegration = parseBoolean(props, "enableBetterVanillaMobsIntegration", enableBetterVanillaMobsIntegration, logger);
         betterVanillaMobsAscensionCoreDropChance = parseDouble(props, "betterVanillaMobsAscensionCoreDropChance", betterVanillaMobsAscensionCoreDropChance, 0.0, 1.0, logger);
@@ -240,6 +250,14 @@ public final class AscensionCoresConfig {
                 # has a chance to roll above its normal maximum, and an equal
                 # chance to bust to its minimum.
                 chaosGambleMode=%s
+                # If true, leveling an item to L1 has a chance to apply a permanent
+                # CURSE: a downside attribute modifier in exchange for an amplified
+                # top trait. Adds variance and drama to god-rolls.
+                enableCurseTraits=%s
+                # Chance per item to become cursed at first level-up (0.0-1.0).
+                curseChance=%.4f
+                # Multiplier applied to the cursed item's top trait magnitude.
+                curseTraitBoost=%.2f
                 # XP levels charged by the anvil for each Ascension upgrade.
                 # Level 1 means L0->L1, Level 2 means L1->L2, etc.
                 upgradeXpCostLevel1=%d
@@ -276,6 +294,13 @@ public final class AscensionCoresConfig {
                 # When it rolls, target level is weighted (higher levels are rarer).
                 randomLootAscensionChance=%.4f
                 treasureRandomLootAscensionChance=%.4f
+                # Tier ratio for leveled loot (truncated geometric). Each consecutive
+                # tier is q times as common as the one below it, so q controls the
+                # whole curve with one knob. Lower q = rarer high tiers.
+                # Defaults — normal 0.35: L1 65.34%%, L2 22.87%%, L3 8.00%%, L4 2.80%%, L5 0.98%%.
+                #            treasure 0.50: L1 51.61%%, L2 25.81%%, L3 12.90%%, L4 6.45%%, L5 3.23%%.
+                lootLevelBumpChance=%.4f
+                treasureLootLevelBumpChance=%.4f
 
                 # ── Trait pools ───────────────────────────────────────────────
                 # Comma-separated list of trait IDs to exclude from rolling, per pool.
@@ -351,6 +376,9 @@ public final class AscensionCoresConfig {
                     enableSalvage,
                     salvageRefundPercent,
                     chaosGambleMode,
+                    enableCurseTraits,
+                    curseChance,
+                    curseTraitBoost,
                     upgradeXpCostLevel1,
                     upgradeXpCostLevel2,
                     upgradeXpCostLevel3,
@@ -369,6 +397,8 @@ public final class AscensionCoresConfig {
                     treasureChaosCoreChance,
                     randomLootAscensionChance,
                     treasureRandomLootAscensionChance,
+                    lootLevelBumpChance,
+                    treasureLootLevelBumpChance,
                     setToString(disabledWeaponTraits),
                     setToString(disabledRangedTraits),
                     setToString(disabledArmorTraits),

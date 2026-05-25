@@ -1,0 +1,21 @@
+{
+  "display": {
+    "icon": { "id": "ascensioncores:ascension_core" },
+    "title": { "text": "Ascension Cores" },
+    "description": { "text": "Find or craft an Ascension Core." },
+    "background": "ascensioncores:gui/advancements/backgrounds/end_dark",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "got_core": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": "ascensioncores:ascension_core" }
+        ]
+      }
+    }
+  }
+}

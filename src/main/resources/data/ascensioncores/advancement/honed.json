@@ -1,0 +1,21 @@
+{
+  "parent": "ascensioncores:root",
+  "display": {
+    "icon": { "id": "minecraft:iron_sword" },
+    "title": { "text": "Honed", "color": "white" },
+    "description": { "text": "Get a Honed (tier 1) item." },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "have_tier": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "components": { "ascensioncores:level": 1 } }
+        ]
+      }
+    }
+  }
+}

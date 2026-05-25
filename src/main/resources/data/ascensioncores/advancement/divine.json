@@ -1,0 +1,21 @@
+{
+  "parent": "ascensioncores:mythic",
+  "display": {
+    "icon": { "id": "minecraft:netherite_sword" },
+    "title": { "text": "Divine", "color": "light_purple" },
+    "description": { "text": "Get a Divine (tier 5) item — the apex of ascension." },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "have_tier": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "components": { "ascensioncores:level": 5 } }
+        ]
+      }
+    }
+  }
+}

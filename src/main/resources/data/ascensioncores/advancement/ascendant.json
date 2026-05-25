@@ -1,0 +1,21 @@
+{
+  "parent": "ascensioncores:empowered",
+  "display": {
+    "icon": { "id": "minecraft:diamond_sword" },
+    "title": { "text": "Ascendant", "color": "aqua" },
+    "description": { "text": "Get an Ascendant (tier 3) item." },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "have_tier": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "components": { "ascensioncores:level": 3 } }
+        ]
+      }
+    }
+  }
+}

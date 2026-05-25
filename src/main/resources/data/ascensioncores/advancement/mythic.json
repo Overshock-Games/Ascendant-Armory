@@ -1,0 +1,21 @@
+{
+  "parent": "ascensioncores:ascendant",
+  "display": {
+    "icon": { "id": "minecraft:netherite_sword" },
+    "title": { "text": "Mythic", "color": "gold" },
+    "description": { "text": "Get a Mythic (tier 4) item." },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "have_tier": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "components": { "ascensioncores:level": 4 } }
+        ]
+      }
+    }
+  }
+}

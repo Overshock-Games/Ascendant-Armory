@@ -127,6 +127,12 @@ public abstract class PlayerAttackMixin {
             TraitFx.ambush(player.level(), target);
         }
 
+        for (com.ascensioncores.gear.Synergy syn : com.ascensioncores.gear.Synergy.activeOn(weapon)) {
+            if (syn.fires(player, target)) {
+                amount *= (float) (1.0 + syn.damageMultiplier());
+            }
+        }
+
         return target.hurtOrSimulate(source, amount);
     }
 

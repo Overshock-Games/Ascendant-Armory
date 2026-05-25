@@ -35,5 +35,21 @@ public final class ModComponents {
             .build()
     );
 
+    public static final DataComponentType<Integer> KILLS = Registry.register(
+        BuiltInRegistries.DATA_COMPONENT_TYPE,
+        Identifier.fromNamespaceAndPath("ascensioncores", "kills"),
+        DataComponentType.<Integer>builder()
+            .persistent(Codec.INT)
+            .build()
+    );
+
+    public static final DataComponentType<String> CURSE = Registry.register(
+        BuiltInRegistries.DATA_COMPONENT_TYPE,
+        Identifier.fromNamespaceAndPath("ascensioncores", "curse"),
+        DataComponentType.<String>builder()
+            .persistent(Codec.STRING)
+            .build()
+    );
+
     public static void register() {}
 }
