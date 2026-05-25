@@ -11,6 +11,7 @@ Ascendant Armory does the opposite: your diamond sword stays a diamond sword. Bu
 - Vanilla-friendly: doesn't add gear, doesn't replace enchants, doesn't fight other mods
 
 ![Ascension and Chaos cores](https://cdn.modrinth.com/data/cached_images/b774ebc3efc40c416fc25d93889a49b83b4335d4.png)
+
 ![Tiered Diamond Weapons](https://cdn.modrinth.com/data/cached_images/3be44c96fc36844c08b333f75c4043f10bddc712.png)
 
 ## Full documentation → [Wiki](https://github.com/Overshock-Studios/Ascendant-Armory/wiki)
