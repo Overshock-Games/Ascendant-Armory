@@ -29,16 +29,6 @@ public abstract class LivingEntityDamageMixin {
             return 0.0f;
         }
 
-        // Deflection (Projectile Reflection)
-        if (source.getDirectEntity() instanceof Projectile projectile) {
-            double deflection = GearHelper.getScaledArmorStatAmount(entity, "deflection");
-            if (deflection > 0.0 && Math.random() < deflection) {
-                projectile.setDeltaMovement(projectile.getDeltaMovement().scale(-0.5));
-                level.playSound(null, entity.blockPosition(), net.minecraft.sounds.SoundEvents.SHIELD_BLOCK.value(), net.minecraft.sounds.SoundSource.PLAYERS, 0.8f, 1.2f);
-                return 0.0f;
-            }
-        }
-
         double lastStand = GearHelper.getScaledArmorStatAmount(entity, "low_health_guard");
         if (lastStand > 0.0 && entity.getHealth() / entity.getMaxHealth() <= 0.35f) {
             amount *= (float) (1.0 - Math.min(lastStand, 0.60));

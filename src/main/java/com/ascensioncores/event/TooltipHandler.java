@@ -87,12 +87,27 @@ public final class TooltipHandler {
 
             for (Synergy syn : Synergy.involvingTrait(rolled.id())) {
                 boolean active = Synergy.activeOn(stack).stream().anyMatch(s -> s.id().equals(syn.id()));
-                StatPool.StatDef partnerDef = StatPool.getById(syn.partnerOf(rolled.id()));
-                String partner = partnerDef != null ? partnerDef.displayName() : "?";
+                String partnerId = syn.partnerOf(rolled.id());
                 if (active) {
-                    lines.add(Component.literal("    ✦ " + syn.displayName() + ": " + syn.description())
+                    // For an active synergy, only render the line under the *later* of the two
+                    // contributing traits — otherwise it duplicates above and below.
+                    int partnerIdx = -1;
+                    for (int j = 0; j < stats.size(); j++) {
+                        if (stats.get(j).id().equals(partnerId)) { partnerIdx = j; break; }
+                    }
+                    if (partnerIdx > i) continue;
+                    StatPool.StatDef aDef = StatPool.getById(syn.traitA());
+                    StatPool.StatDef bDef = StatPool.getById(syn.traitB());
+                    String a = aDef != null ? aDef.displayName() : syn.traitA();
+                    String b = bDef != null ? bDef.displayName() : syn.traitB();
+                    lines.add(Component.literal(
+                            "    " + syn.icon() + " " + syn.displayName() + " (" + a + " + " + b + ")")
                         .withStyle(style -> style.withColor(0xE0A040).withItalic(true)));
+                    lines.add(Component.literal("       " + syn.description())
+                        .withStyle(style -> style.withColor(0xC08838).withItalic(true)));
                 } else {
+                    StatPool.StatDef partnerDef = StatPool.getById(partnerId);
+                    String partner = partnerDef != null ? partnerDef.displayName() : "?";
                     lines.add(Component.literal("    ↳ pairs with " + partner)
                         .withStyle(style -> style.withColor(0x666666).withItalic(true)));
                 }
@@ -165,7 +180,6 @@ public final class TooltipHandler {
             case "pinning"              -> 0x4488FF;
             case "overcharge_damage"    -> 0xFFEE00;
             case "evasion"              -> 0x88FFDD;
-            case "deflection"           -> 0xAAAAFF;
             case "effect_resist"        -> 0xFFAA55;
             case "melee_resistance"     -> 0xBBBBBB;
             case "natural_regeneration" -> 0x66FF88;

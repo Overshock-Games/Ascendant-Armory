@@ -37,6 +37,7 @@ public final class Synergy {
     }
 
     private final String id;
+    private final String icon;
     private final String displayName;
     private final String description;
     private final String traitA;
@@ -44,9 +45,10 @@ public final class Synergy {
     private final double damageMultiplier;
     private final Condition condition;
 
-    private Synergy(String id, String displayName, String description,
+    private Synergy(String id, String icon, String displayName, String description,
                     String traitA, String traitB, double damageMultiplier, Condition condition) {
         this.id = id;
+        this.icon = icon;
         this.displayName = displayName;
         this.description = description;
         this.traitA = traitA;
@@ -56,18 +58,19 @@ public final class Synergy {
     }
 
     public static final List<Synergy> ALL = List.of(
-        new Synergy("cryoexecution", "Cryoexecution",
+        new Synergy("cryoexecution", "❄", "Cryoexecution",
             "+25% damage to slowed targets",
             "frostbite", "execution_damage", 0.25, Condition.TARGET_SLOWED),
-        new Synergy("plague_doctor", "Plague Doctor",
+        new Synergy("plague_doctor", "☣", "Plague Doctor",
             "+25% damage to poisoned targets",
             "venom", "heal_suppress", 0.25, Condition.TARGET_POISONED),
-        new Synergy("stormbreaker", "Stormbreaker",
+        new Synergy("stormbreaker", "⚡", "Stormbreaker",
             "+25% damage to weakened targets",
             "shock", "wither", 0.25, Condition.TARGET_WEAKENED)
     );
 
     public String id() { return id; }
+    public String icon() { return icon; }
     public String displayName() { return displayName; }
     public String description() { return description; }
     public String traitA() { return traitA; }

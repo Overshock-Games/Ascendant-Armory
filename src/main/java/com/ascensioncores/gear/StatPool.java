@@ -125,7 +125,6 @@ public final class StatPool {
     private static List<StatDef> createArmorPool() {
         List<StatDef> pool = new ArrayList<>(List.of(
             new StatDef("evasion",              null,                                   0.005,0.02, "Evasion",              "%"),
-            new StatDef("deflection",           null,                                   0.01, 0.04, "Deflection",           "%"),
             new StatDef("effect_resist",        null,                                   0.04, 0.10, "Effect Resist",        "%"),
             new StatDef("melee_resistance",     null,                                   0.02, 0.06, "Melee Resistance",     "%"),
             new StatDef("natural_regeneration", PuffishAttributes.NATURAL_REGENERATION, 0.05, 0.20, "Natural Regeneration", "%", PERCENT_OPERATION),

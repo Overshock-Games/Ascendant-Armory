@@ -314,7 +314,7 @@ public final class AscensionCoresConfig {
                 #   critical_damage, execution_damage, ambush_damage, venom, shock,
                 #   sprinting_speed, stealth, jump, repair_discount,
                 #   opening_damage, wither, heal_suppress, pinning, overcharge_damage
-                # Armor traits:   evasion, deflection, effect_resist, melee_resistance,
+                # Armor traits:   evasion, effect_resist, melee_resistance,
                 #   natural_regeneration, low_health_guard, sneak_guard, sprinting_speed,
                 #   consuming_speed, repair_discount, stealth, tamed_resistance, stamina, experience_bonus, jump,
                 #   emergency_healing, standstill_guard, max_health
