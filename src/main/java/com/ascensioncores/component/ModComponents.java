@@ -43,6 +43,7 @@ public final class ModComponents {
             .build()
     );
 
+    /** Legacy 1.4.0 pre-release item-level curse marker; retained so old stacks deserialize cleanly. */
     public static final DataComponentType<String> CURSE = Registry.register(
         BuiltInRegistries.DATA_COMPONENT_TYPE,
         Identifier.fromNamespaceAndPath("ascensioncores", "curse"),

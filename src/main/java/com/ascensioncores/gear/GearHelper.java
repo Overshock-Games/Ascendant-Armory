@@ -109,7 +109,6 @@ public final class GearHelper {
     }
 
     private static void setLevel(ItemStack stack, int requestedLevel, Random rng) {
-        int previousLevel = getLevel(stack);
         int newLevel = Math.max(0, Math.min(requestedLevel, getMaxLevel()));
         List<RolledStat> stats = new ArrayList<>(getRolledStats(stack));
 
@@ -127,17 +126,6 @@ public final class GearHelper {
 
         stack.set(ModComponents.ASCENSION_LEVEL, newLevel);
         stack.set(ModComponents.ROLLED_STATS, stats);
-
-        // First-time level-up: roll for curse if the feature is enabled
-        if (previousLevel == 0 && newLevel >= 1
-                && AscensionCoresConfig.enableCurseTraits
-                && !stack.has(ModComponents.CURSE)) {
-            Random r = rng != null ? rng : java.util.concurrent.ThreadLocalRandom.current();
-            if (r.nextDouble() < AscensionCoresConfig.curseChance) {
-                Curse curse = Curse.random(r);
-                stack.set(ModComponents.CURSE, curse.id());
-            }
-        }
 
         rebuildAttributes(stack, newLevel, stats);
     }
@@ -243,31 +231,17 @@ public final class GearHelper {
         addNonAscensionModifiers(builder, vanilla, addedModifiers);
         addNonAscensionModifiers(builder, current, addedModifiers);
 
-        boolean cursed = stack.has(ModComponents.CURSE);
         for (int i = 0; i < stats.size(); i++) {
             RolledStat rolled = stats.get(i);
             StatPool.StatDef def = StatPool.getById(rolled.id());
             if (def == null || def.attribute() == null) continue;
             double amount = rolled.amount() * (level - i);
-            if (cursed && i == 0) amount *= AscensionCoresConfig.curseTraitBoost;
             AttributeModifier mod = new AttributeModifier(
                 Identifier.fromNamespaceAndPath("ascensioncores", "stat_" + def.id() + "_" + i),
                 amount,
                 def.operation()
             );
             builder.add(def.attribute(), mod, slotGroup, ItemAttributeModifiers.Display.hidden());
-        }
-
-        if (cursed) {
-            Curse curse = Curse.byId(stack.get(ModComponents.CURSE));
-            if (curse != null) {
-                AttributeModifier curseMod = new AttributeModifier(
-                    Identifier.fromNamespaceAndPath("ascensioncores", "curse_" + curse.id()),
-                    curse.amount(),
-                    curse.operation()
-                );
-                builder.add(curse.attribute(), curseMod, slotGroup, ItemAttributeModifiers.Display.hidden());
-            }
         }
 
         stack.set(DataComponents.ATTRIBUTE_MODIFIERS, builder.build());
@@ -536,12 +510,10 @@ public final class GearHelper {
         double total = 0.0;
         List<RolledStat> stats = getRolledStats(stack);
 
-        boolean cursed = stack.has(ModComponents.CURSE);
         for (int i = 0; i < stats.size(); i++) {
             RolledStat rolled = stats.get(i);
             if (rolled.id().equals(statId)) {
                 double amount = rolled.amount() * (level - i);
-                if (cursed && i == 0) amount *= AscensionCoresConfig.curseTraitBoost;
                 total += amount;
             }
         }

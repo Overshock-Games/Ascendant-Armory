@@ -1,22 +1,16 @@
 ## 1.4.0
 
 ### Added
-- **Advancements** — a full ascension tree under its own tab: Ascension Core pickup roots a 5-tier chain (Honed → Empowered → Ascendant → Mythic → Divine), with a Chaos Core branch. Custom dark end-stone background.
-- **Per-item kill counter** — leveled weapons quietly track kills landed with them and display the count on the tooltip. Survives anvil upgrades, chaos rerolls, and trait donations.
-- **Trait synergies** — three hand-picked trait pairs grant bonus damage when both sit on the same item and the target is in the matching state:
-  - **Cryoexecution** (Frostbite + Execution Damage) — +25% damage to slowed targets.
-  - **Plague Doctor** (Venom + Heal Suppress) — +25% damage to poisoned targets.
-  - **Stormbreaker** (Shock + Wither) — +25% damage to weakened targets.
-  - Tooltip shows every trait's synergy partners as a dim "pairs with" hint for discovery; promotes to a soft amber active line under both contributing traits when the pair lights up.
-- **Curse traits** — leveling an item to L1 has a chance to permanently mark it cursed: its top trait is amplified (×1.5 by default) in exchange for a permanent attribute downside while held/worn. Four starting curses: Frail (−10% Max HP), Sluggish (−8% Movement Speed), Brittle (−2 Armor), Weak (−10% Attack Damage). On by default; configurable via `enableCurseTraits`, `curseChance`, `curseTraitBoost`.
-- New config `lootLevelBumpChance` (default 0.35) and `treasureLootLevelBumpChance` (default 0.50) — single knob per table controlling how rare the higher tiers are.
+- **Advancements + kill tracking.** Added a full Ascension advancement tree and per-item kill counters for leveled weapons.
+- **Trait synergies.** Cryoexecution, Plague Doctor, and Stormbreaker reward specific trait pairs with +25% conditional damage.
+- **Curse traits.** Trait rolls can now hit a cursed sub-pool (`curse_frail`, `curse_sluggish`, `curse_brittle`, `curse_weak`) with direct downsides. Configurable via `enableCurseTraits` and `curseChance`.
+- **Loot tier tuning.** Added `lootLevelBumpChance` and `treasureLootLevelBumpChance` to control high-tier pre-leveled loot rarity.
 
 ### Changed
-- Reworked the naturally-leveled loot tier formula to a truncated geometric distribution. Consecutive tiers now have a clean constant ratio — fixes the old catch-all where Divine piled up against Mythic and never felt meaningfully rarer.
-- Default per-loot-drop distributions (including the chance an item rolls un-leveled at all): normal loot L0 60% / L1 26.1% / L2 9.2% / L3 3.2% / L4 1.1% / L5 0.4%; treasure loot L0 40% / L1 31.0% / L2 15.5% / L3 7.7% / L4 3.9% / L5 1.9%.
-- **Removed Deflection trait.** Its projectile-reflection niche was too narrow and overlapped with Evasion (which already negates any damage source including projectiles). Existing items with Deflection are auto-repaired by the new trait-gap repair (see below) when the player's inventory is loaded. Evasion's wording in the wiki is clarified to make its any-source coverage explicit.
-- **Auto-repair for trait gaps.** When a player joins, carried leveled gear is checked once: trait IDs that no longer exist (because a trait was removed in an update) are dropped, and any resulting empty slots are refilled with fresh rolls from the appropriate pool. Players never silently lose value when a mod update prunes the trait list.
-- Removed the per-trait next-level preview and the "Cost to Level" footer from item tooltips entirely. The anvil's result slot already shows the exact post-upgrade item when you put an Ascension Core in the right slot, so the inventory-tooltip preview was redundant noise. Much cleaner tooltips.
+- **Loot distribution rework.** Pre-leveled loot now uses a cleaner truncated geometric formula, making Divine properly rarer than Mythic.
+- **Removed Deflection.** Evasion now covers the useful projectile-negation niche; old Deflection slots are repaired automatically when a player's inventory loads.
+- **Trait-gap repair.** Removed/invalid trait IDs are dropped and refilled once on player join so old gear keeps its unlocked trait count.
+- **Cleaner tooltips.** Removed next-level trait previews and the "Cost to Level" footer from normal inventory tooltips.
 
 ## 1.3.0
 

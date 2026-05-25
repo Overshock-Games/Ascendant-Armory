@@ -4,7 +4,6 @@ import com.ascensioncores.AscensionCoresConfig;
 import com.ascensioncores.gear.GearHelper;
 import com.ascensioncores.gear.RolledStat;
 import com.ascensioncores.gear.StatPool;
-import com.ascensioncores.gear.Curse;
 import com.ascensioncores.gear.Synergy;
 import com.ascensioncores.item.ModItems;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
@@ -60,12 +59,6 @@ public final class TooltipHandler {
 
         lines.add(Component.literal("  (" + stats.size() + "/" + capacity + " traits)")
             .withStyle(style -> style.withColor(levelColor(level))));
-
-        Curse curse = Curse.byId(stack.get(com.ascensioncores.component.ModComponents.CURSE));
-        if (curse != null) {
-            lines.add(Component.literal("  ☠ Cursed: " + curse.displayName() + " (" + curse.description() + ")")
-                .withStyle(ChatFormatting.DARK_RED));
-        }
 
         for (int i = 0; i < stats.size(); i++) {
             RolledStat rolled = stats.get(i);
@@ -191,6 +184,7 @@ public final class TooltipHandler {
             case "emergency_healing"    -> 0xFF88BB;
             case "standstill_guard"     -> 0xAAAAAA;
             case "max_health"           -> 0xFF2244;
+            case "curse_frail", "curse_sluggish", "curse_brittle", "curse_weak" -> 0xAA2222;
             default                     -> 0x2BBBCC;
         };
     }

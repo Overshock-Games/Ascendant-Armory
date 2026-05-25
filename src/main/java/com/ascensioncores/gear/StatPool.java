@@ -30,16 +30,21 @@ public final class StatPool {
         String displayName,
         String unit,   // "%" → multiply by 100 and append %; otherwise append as-is
         AttributeModifier.Operation operation,
-        int minLevel    // earliest item ascension level at which this stat may roll
+        int minLevel,   // earliest item ascension level at which this stat may roll
+        boolean cursed
     ) {
         public StatDef(String id, Holder<Attribute> attribute, double minAmount, double maxAmount, String displayName, String unit) {
-            this(id, attribute, minAmount, maxAmount, displayName, unit, AttributeModifier.Operation.ADD_VALUE, 1);
+            this(id, attribute, minAmount, maxAmount, displayName, unit, AttributeModifier.Operation.ADD_VALUE, 1, false);
         }
         public StatDef(String id, Holder<Attribute> attribute, double minAmount, double maxAmount, String displayName, String unit, AttributeModifier.Operation operation) {
-            this(id, attribute, minAmount, maxAmount, displayName, unit, operation, 1);
+            this(id, attribute, minAmount, maxAmount, displayName, unit, operation, 1, false);
         }
         public StatDef(String id, Holder<Attribute> attribute, double minAmount, double maxAmount, String displayName, String unit, int minLevel) {
-            this(id, attribute, minAmount, maxAmount, displayName, unit, AttributeModifier.Operation.ADD_VALUE, minLevel);
+            this(id, attribute, minAmount, maxAmount, displayName, unit, AttributeModifier.Operation.ADD_VALUE, minLevel, false);
+        }
+        public static StatDef cursed(String id, Holder<Attribute> attribute, double minAmount, double maxAmount,
+                                     String displayName, String unit, AttributeModifier.Operation operation) {
+            return new StatDef(id, attribute, minAmount, maxAmount, displayName, unit, operation, 1, true);
         }
     }
 
@@ -93,6 +98,7 @@ public final class StatPool {
             new StatDef("chain_damage",         null,                                   0.01, 0.03, "Chain Damage",         "%"),
             new StatDef("heal_suppress",        null,                                   0.03, 0.08, "Heal Suppress",        "%")
         ));
+        addCurseTraits(pool);
         return List.copyOf(pool);
     }
 
@@ -119,6 +125,7 @@ public final class StatPool {
             new StatDef("pinning",              null,                                   0.03, 0.08, "Pinning",              "%"),
             new StatDef("overcharge_damage",    null,                                   0.08, 0.20, "Overcharge Damage",    "%")
         ));
+        addCurseTraits(pool);
         return List.copyOf(pool);
     }
 
@@ -142,6 +149,7 @@ public final class StatPool {
             new StatDef("standstill_guard",     null,                                   0.05, 0.15, "Standstill Guard",     "%"),
             new StatDef("max_health",           Attributes.MAX_HEALTH,                  0.20, 0.60, "Max Health",           " HP")
         ));
+        addCurseTraits(pool);
         return List.copyOf(pool);
     }
 
@@ -155,7 +163,20 @@ public final class StatPool {
             new StatDef("stealth",              PuffishAttributes.STEALTH,              0.30, 1.00, "Stealth",              " blk"),
             new StatDef("sprinting_speed",      PuffishAttributes.SPRINTING_SPEED,      0.03, 0.10, "Sprint Speed",         "%", PERCENT_OPERATION)
         ));
+        addCurseTraits(pool);
         return List.copyOf(pool);
+    }
+
+    private static void addCurseTraits(List<StatDef> pool) {
+        if (!AscensionCoresConfig.enableCurseTraits) return;
+        pool.add(StatDef.cursed("curse_frail", Attributes.MAX_HEALTH, -0.02, -0.01,
+            "Curse: Frail Health", "%", PERCENT_OPERATION));
+        pool.add(StatDef.cursed("curse_sluggish", Attributes.MOVEMENT_SPEED, -0.02, -0.01,
+            "Curse: Sluggish Speed", "%", PERCENT_OPERATION));
+        pool.add(StatDef.cursed("curse_brittle", Attributes.ARMOR, -0.40, -0.20,
+            "Curse: Brittle", " Armor", AttributeModifier.Operation.ADD_VALUE));
+        pool.add(StatDef.cursed("curse_weak", Attributes.ATTACK_DAMAGE, -0.02, -0.01,
+            "Curse: Weak Strikes", "%", PERCENT_OPERATION));
     }
 
     // ── Rolling ─────────────────────────────────────────────────────────────
@@ -186,25 +207,28 @@ public final class StatPool {
     public static RolledStat rollStat(List<RolledStat> existing, List<StatDef> pool, int currentLevel,
                                       Random random, boolean gamble) {
         Set<String> existingIds = existing.stream().map(RolledStat::id).collect(Collectors.toSet());
-        List<StatDef> available = pool.stream()
-            .filter(def -> !existingIds.contains(def.id()))
-            .filter(def -> def.minLevel() <= currentLevel)
-            .toList();
+        List<StatDef> available = availableStats(existingIds, pool, currentLevel, false);
+        List<StatDef> curseAvailable = availableStats(existingIds, pool, currentLevel, true);
+        if (available.isEmpty()) {
+            available = curseAvailable;
+        } else if (!curseAvailable.isEmpty() && random.nextDouble() < AscensionCoresConfig.curseChance) {
+            available = curseAvailable;
+        }
         if (available.isEmpty()) return null;
 
         StatDef chosen = available.get(random.nextInt(available.size()));
         double span = chosen.maxAmount() - chosen.minAmount();
         double raw;
         if (gamble) {
-            // repair_discount is the lone stat where a more-negative value is better
-            boolean lowerIsBetter = chosen.id().equals("repair_discount");
+            // repair_discount and cursed traits are cases where a more-negative value is stronger.
+            boolean lowerIsBetter = chosen.id().equals("repair_discount") || chosen.cursed();
             double roll = random.nextDouble();
             if (roll < 0.25) {
                 // bust — weakest extreme
                 raw = lowerIsBetter ? chosen.maxAmount() : chosen.minAmount();
             } else if (roll < 0.50) {
                 // jackpot — past the strong extreme by up to 50% of the normal span
-                double over = random.nextDouble() * span * 0.5;
+                double over = random.nextDouble() * Math.abs(span) * 0.5;
                 raw = lowerIsBetter ? chosen.minAmount() - over : chosen.maxAmount() + over;
             } else {
                 raw = chosen.minAmount() + random.nextDouble() * span;
@@ -214,6 +238,14 @@ public final class StatPool {
         }
         double amount = Math.round(raw * 100.0) / 100.0;
         return new RolledStat(chosen.id(), amount);
+    }
+
+    private static List<StatDef> availableStats(Set<String> existingIds, List<StatDef> pool, int currentLevel, boolean cursed) {
+        return pool.stream()
+            .filter(def -> !existingIds.contains(def.id()))
+            .filter(def -> def.minLevel() <= currentLevel)
+            .filter(def -> def.cursed() == cursed)
+            .toList();
     }
 
     // ── Lookup ──────────────────────────────────────────────────────────────

@@ -29,7 +29,6 @@ public final class AscensionCoresConfig {
     public static boolean chaosGambleMode = false;
     public static boolean enableCurseTraits = true;
     public static double curseChance = 0.10;
-    public static double curseTraitBoost = 1.5;
     public static int upgradeXpCostLevel1 = 2;
     public static int upgradeXpCostLevel2 = 4;
     public static int upgradeXpCostLevel3 = 6;
@@ -89,7 +88,7 @@ public final class AscensionCoresConfig {
             }
         }
 
-        maxLevel = parseInt(props, "maxLevel", maxLevel, 1, 10, logger);
+        maxLevel = parseInt(props, "maxLevel", maxLevel, 1, 5, logger);
         upgradeCoreCostLevel1 = parseInt(props, "upgradeCoreCostLevel1", upgradeCoreCostLevel1, 1, 64, logger);
         upgradeCoreCostLevel2 = parseInt(props, "upgradeCoreCostLevel2", upgradeCoreCostLevel2, 1, 64, logger);
         upgradeCoreCostLevel3 = parseInt(props, "upgradeCoreCostLevel3", upgradeCoreCostLevel3, 1, 64, logger);
@@ -104,7 +103,6 @@ public final class AscensionCoresConfig {
         chaosGambleMode = parseBoolean(props, "chaosGambleMode", chaosGambleMode, logger);
         enableCurseTraits = parseBoolean(props, "enableCurseTraits", enableCurseTraits, logger);
         curseChance = parseDouble(props, "curseChance", curseChance, 0.0, 1.0, logger);
-        curseTraitBoost = parseDouble(props, "curseTraitBoost", curseTraitBoost, 1.0, 5.0, logger);
         upgradeXpCostLevel1 = parseInt(props, "upgradeXpCostLevel1", upgradeXpCostLevel1, 0, 1000, logger);
         upgradeXpCostLevel2 = parseInt(props, "upgradeXpCostLevel2", upgradeXpCostLevel2, 0, 1000, logger);
         upgradeXpCostLevel3 = parseInt(props, "upgradeXpCostLevel3", upgradeXpCostLevel3, 0, 1000, logger);
@@ -218,8 +216,8 @@ public final class AscensionCoresConfig {
                 # Changes take effect after /ascensioncores reload or server restart.
 
                 # ── Core gameplay ─────────────────────────────────────────────────
-                # Max ascension level any gear can reach (1-5). Tooltip caps and the
-                # number of rolled stats scale with this.
+                # Max ascension level any gear can reach (1-5). Trait slots are still
+                # capped by material capacity and available traits.
                 maxLevel=%d
                 # Ascension Cores required for each upgrade level.
                 # Level 1 means L0->L1, Level 2 means L1->L2, etc.
@@ -250,14 +248,12 @@ public final class AscensionCoresConfig {
                 # has a chance to roll above its normal maximum, and an equal
                 # chance to bust to its minimum.
                 chaosGambleMode=%s
-                # If true, leveling an item to L1 has a chance to apply a permanent
-                # CURSE: a downside attribute modifier in exchange for an amplified
-                # top trait. Adds variance and drama to god-rolls.
+                # If true, trait rolls can draw from the cursed trait sub-pool.
+                # Cursed traits are normal rollable traits with direct downsides;
+                # Chaos Cores can reroll them and donation can move them.
                 enableCurseTraits=%s
-                # Chance per item to become cursed at first level-up (0.0-1.0).
+                # Chance per trait roll to draw from the cursed trait sub-pool (0.0-1.0).
                 curseChance=%.4f
-                # Multiplier applied to the cursed item's top trait magnitude.
-                curseTraitBoost=%.2f
                 # XP levels charged by the anvil for each Ascension upgrade.
                 # Level 1 means L0->L1, Level 2 means L1->L2, etc.
                 upgradeXpCostLevel1=%d
@@ -309,17 +305,21 @@ public final class AscensionCoresConfig {
                 # Weapon traits:  life_steal, reach, attack_speed, armor_shred, toughness_shred,
                 #   experience_bonus, critical_damage, execution_damage, ambush_damage, frostbite, venom,
                 #   shock, sprinting_speed, stealth, jump, repair_discount,
-                #   opening_damage, wither, chain_damage, heal_suppress
+                #   opening_damage, wither, chain_damage, heal_suppress,
+                #   curse_frail, curse_sluggish, curse_brittle, curse_weak
                 # Ranged traits:  life_steal, armor_shred, toughness_shred, experience_bonus,
                 #   critical_damage, execution_damage, ambush_damage, venom, shock,
                 #   sprinting_speed, stealth, jump, repair_discount,
-                #   opening_damage, wither, heal_suppress, pinning, overcharge_damage
+                #   opening_damage, wither, heal_suppress, pinning, overcharge_damage,
+                #   curse_frail, curse_sluggish, curse_brittle, curse_weak
                 # Armor traits:   evasion, effect_resist, melee_resistance,
                 #   natural_regeneration, low_health_guard, sneak_guard, sprinting_speed,
                 #   consuming_speed, repair_discount, stealth, tamed_resistance, stamina, experience_bonus, jump,
-                #   emergency_healing, standstill_guard, max_health
+                #   emergency_healing, standstill_guard, max_health,
+                #   curse_frail, curse_sluggish, curse_brittle, curse_weak
                 # Tool traits:    experience_bonus, repair_discount, jump,
-                #   natural_regeneration, stamina, stealth, sprinting_speed
+                #   natural_regeneration, stamina, stealth, sprinting_speed,
+                #   curse_frail, curse_sluggish, curse_brittle, curse_weak
                 disabledWeaponTraits=%s
                 disabledRangedTraits=%s
                 disabledArmorTraits=%s
@@ -334,13 +334,13 @@ public final class AscensionCoresConfig {
                 # Formula: chance = base + ((stars - 1) * perStar).
                 betterVanillaMobsAscensionCoreDropChance=%.4f
                 # Added to the Ascension Core chance for each BVM rarity star after the first.
-                # Default: 1-star 4%%, 2-star 5.5%%, 3-star 7%%, 4-star 8.5%%, 5-star/Alpha 10%%.
+                # Default: 1-star 3%%, 2-star 6%%, 3-star 9%%, 4-star 12%%, 5-star/Alpha 15%%.
                 betterVanillaMobsAscensionCoreDropChancePerStar=%.4f
                 # BVM-only override: Chaos Core chance for a 1-star touched mob.
                 # Replaces mobChaosCoreDropChance for BVM mobs.
                 betterVanillaMobsChaosCoreDropChance=%.4f
                 # Added to the Chaos Core chance for each BVM rarity star after the first.
-                # Default: 1-star 0.3%%, 2-star 0.6%%, 3-star 0.9%%, 4-star 1.2%%, 5-star/Alpha 1.5%%.
+                # Default: 1-star 1%%, 2-star 2%%, 3-star 3%%, 4-star 4%%, 5-star/Alpha 5%%.
                 betterVanillaMobsChaosCoreDropChancePerStar=%.4f
                 # If true, integrates with the "Hostile Mobs Improve Over Time" datapack:
                 # core drop chance scales with the killer's HostileMobs difficulty score.
@@ -378,7 +378,6 @@ public final class AscensionCoresConfig {
                     chaosGambleMode,
                     enableCurseTraits,
                     curseChance,
-                    curseTraitBoost,
                     upgradeXpCostLevel1,
                     upgradeXpCostLevel2,
                     upgradeXpCostLevel3,
