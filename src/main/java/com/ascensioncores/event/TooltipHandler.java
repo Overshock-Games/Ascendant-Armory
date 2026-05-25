@@ -7,14 +7,9 @@ import com.ascensioncores.gear.StatPool;
 import com.ascensioncores.gear.Curse;
 import com.ascensioncores.gear.Synergy;
 import com.ascensioncores.item.ModItems;
-import com.ascensioncores.mixin.AbstractContainerScreenAccessor;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.inventory.AnvilMenu;
-import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
@@ -49,7 +44,6 @@ public final class TooltipHandler {
         int level = GearHelper.getLevel(stack);
         int capacity = Math.min(GearHelper.getMaterialCapacity(stack), GearHelper.getMaxLevel());
         List<RolledStat> stats = GearHelper.getRolledStats(stack);
-        boolean showNextLevelPreview = showNextLevelPreview();
 
         if (level > 0 && !lines.isEmpty()) {
             Component original = lines.get(0);
@@ -89,10 +83,6 @@ public final class TooltipHandler {
             double current = rolled.amount() * multiplier;
             String rankPips = "  " + "✦".repeat(multiplier) + " ";
             String display = rankPips + def.displayName() + ": " + formatStatValue(def, rolled.id(), current);
-            if (showNextLevelPreview && level < GearHelper.getMaxLevel()) {
-                double next = rolled.amount() * (multiplier + 1);
-                display += " ➔ " + formatStatValue(def, rolled.id(), next);
-            }
             lines.add(Component.literal(display).withStyle(style -> style.withColor(statColor(rolled.id()))));
 
             for (Synergy syn : Synergy.involvingTrait(rolled.id())) {
@@ -119,12 +109,6 @@ public final class TooltipHandler {
             lines.add(Component.literal("  Kills: " + kills)
                 .withStyle(ChatFormatting.DARK_GRAY));
         }
-
-        if (showNextLevelPreview && level < GearHelper.getMaxLevel()) {
-            int coreCost = GearHelper.getAscensionCoreCost(level);
-            lines.add(Component.literal("  Cost to Level: " + coreCost + " Ascension Cores")
-                .withStyle(ChatFormatting.GRAY));
-        }
     }
 
     private static String formatStatValue(StatPool.StatDef def, String id, double value) {
@@ -143,22 +127,6 @@ public final class TooltipHandler {
             return String.format("+%.2f Blocks", value);
         }
         return StatPool.formatValue(def, value);
-    }
-
-    private static boolean showNextLevelPreview() {
-        Minecraft client = Minecraft.getInstance();
-        if (!(client.screen instanceof AbstractContainerScreen<?> screen)) return false;
-        if (!(screen.getMenu() instanceof AnvilMenu anvilMenu)) return false;
-
-        Slot hoveredSlot = ((AbstractContainerScreenAccessor) screen).ascensioncores$getHoveredSlot();
-        if (hoveredSlot == null) return false;
-
-        // show preview only on the left input slot when an Ascension Core is in the right input
-        if (hoveredSlot.index == 0) {
-            ItemStack right = anvilMenu.getSlot(1).getItem();
-            return right.is(ModItems.ASCENSION_CORE);
-        }
-        return false;
     }
 
     private static String levelTitle(int level) {

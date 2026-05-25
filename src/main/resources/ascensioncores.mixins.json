@@ -13,9 +13,7 @@
     "ProjectileDamageMixin",
     "LivingEntityEffectMixin"
   ],
-  "client": [
-    "AbstractContainerScreenAccessor"
-  ],
+  "client": [],
   "server": [],
   "injectors": {
     "defaultRequire": 1
