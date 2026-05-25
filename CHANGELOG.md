@@ -10,7 +10,7 @@
 - **Loot distribution rework.** Pre-leveled loot now uses a cleaner truncated geometric formula, making Divine properly rarer than Mythic.
 - **Removed Deflection.** Evasion now covers the useful projectile-negation niche; old Deflection slots are repaired automatically when a player's inventory loads.
 - **Trait-gap repair.** Removed/invalid trait IDs are dropped and refilled once on player join so old gear keeps its unlocked trait count.
-- **Cleaner tooltips.** Removed next-level trait previews and the "Cost to Level" footer from normal inventory tooltips.
+- **Cleaner tooltips.** Removed noisy next-level trait previews from normal inventory tooltips.
 
 ## 1.3.0
 

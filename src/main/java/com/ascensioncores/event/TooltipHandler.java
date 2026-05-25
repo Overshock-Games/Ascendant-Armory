@@ -112,6 +112,12 @@ public final class TooltipHandler {
                 .withStyle(ChatFormatting.DARK_PURPLE));
         }
 
+        if (level < GearHelper.getMaxLevel()) {
+            int coreCost = GearHelper.getAscensionCoreCost(level);
+            lines.add(Component.literal("  Cost to Level: " + coreCost + " Ascension Core" + (coreCost == 1 ? "" : "s"))
+                .withStyle(ChatFormatting.DARK_GRAY));
+        }
+
         int kills = stack.getOrDefault(com.ascensioncores.component.ModComponents.KILLS, 0);
         if (kills > 0) {
             lines.add(Component.literal("  Kills: " + kills)
